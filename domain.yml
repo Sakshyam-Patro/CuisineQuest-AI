@@ -1,0 +1,168 @@
+version: "3.1"
+
+intents:
+  - greet
+  - goodbye
+  # - affirm
+#   - deny
+#   - request_recommendation
+  - book_restaurant
+  - bot_challenge
+  - cancel_reservation
+
+
+entities:
+  - user_name
+  - restaurant_name
+  - phone_number
+  - email
+  - date
+  - time
+#   - restaurant_location
+#   - cuisine
+#   - approx_cost
+slots:
+  user_name:
+    type: text
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: restaurant_form
+            requested_slot: user_name
+  restaurant_name:
+    type: text
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: restaurant_form
+            requested_slot: restaurant_name
+  date:
+    type: text
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: restaurant_form
+            requested_slot: date
+  time:
+    type: text
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: restaurant_form
+            requested_slot: time
+  email:
+    type: text
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: restaurant_form
+            requested_slot: email
+  phone_number:
+    type: text
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: restaurant_form
+            requested_slot: phone_number
+
+actions:
+  - validate_restaurant_form
+  - action_submit_form
+
+forms:
+  restaurant_form:
+    required_slots:
+      - user_name
+      - restaurant_name
+      - date
+      - time
+      - email
+      - phone_number
+
+responses:
+  utter_cancellation_confirmation:
+    - text: "Your reservation has been canceled for now."
+
+  utter_iamabot:
+    - text: "I am a bot, designed to help you make a restaurant booking."
+
+  utter_goodbye:
+    - text: "Thank you for booking with us! Have a nice day!"
+
+  utter_greet:
+    - text: "Hello! How can I assist you today? Please feel free to book a restaurant."
+
+  utter_confirm_booking:
+    - text: |
+        Thank you! Your booking has been confirmed. Here are the details:
+        Name: {user_name}
+        Restaurant: {restaurant_name}
+        Phone Number: {phone_number}
+        Email: {email}
+        Date: {date}
+        Time: {time}
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
+
+#   utter_greet:
+#     - text: "Hello! How can I assist you today? Please feel free to book a restaurant."
+
+#   utter_goodbye:
+#     - text: "Thank you! Have a nice day!"
+
+  # utter_confirm_booking:
+  #   - text: |
+  #       Thank you! Your booking has been confirmed. Here are the details:
+  #       Name: {user_name}
+  #       Restaurant: {restaurant_name}
+  #       Phone Number: {phone_number}
+  #       Email: {email}
+  #       Date: {date}
+  #       Time: {time}
+
+#   utter_ask_continue:
+#     - text: "Would you like to book another restaurant or do anything else?"
+
+#   utter_cuisine_recommendation:
+#     - text: "Here are the top-rated {cuisine} restaurants for you:"
+
+#   utter_location_recommendation:
+#     - text: "Here are some top-rated restaurants in {restaurant_location}:"
+
+#   utter_cost_recommendation:
+#     - text: "Here are some restaurants within the {approx_cost} range in {restaurant_location}:"
+
+#   utter_cancellation_confirmation:
+#     - text: "Your reservation has been canceled."
+
+#   utter_iamabot:
+#     - text: "I am a bot, designed to help you make a restaurant booking."
+
+#   # utter_ask_cuisine:
+#   #   - text: "What type of cuisine are you interested in?"
+  
+#   # utter_ask_location:
+#   #   - text: "In which area or location are you looking to dine?"
+  
+#   # utter_ask_approx_cost:
+#   #   - text: "What is your approximate budget for this meal?"
+  
+#   # utter_ask_rating_preference:
+#   #   - text: "Do you have a preference for restaurant ratings?"
+  
+#   # utter_ask_reservation_details:
+#   #   - text: "Could you please provide the name of the restaurant for which you want to cancel the reservation?"
+  
+#   # utter_chitchat:
+#   #   - text: "I'm here to assist with restaurant bookings. How can I help you today?"
+  
+#   # utter_default:
+#   #   - text: "I'm sorry, I didn't quite understand that. How can I assist you?"
+
+# actions:
+#   - action_recommend_by_cuisine
+#   - action_recommend_by_location
+#   - action_recommend_by_approx_cost
+#   - action_recommend_by_rating

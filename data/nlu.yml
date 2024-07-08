@@ -1,0 +1,143 @@
+version: "3.1"
+# Greets and salutations
+nlu:
+# greet 
+- intent: greet
+  examples: |
+    - hey
+    - hello
+    - hi
+    - hello there
+    - good morning
+    - good evening
+    - Heyy
+    - Heyyyoo
+    - Howdy
+    - Ola
+    - Namaste
+    - Hallo
+    - hey there
+    - let's go
+    - hey dude
+    - goodmorning
+    - goodevening
+    - good afternoon
+    - What's up
+    - yo
+    - yoo
+
+# Goodbye
+- intent: goodbye
+  examples: |
+    - cu
+    - good by
+    - cee you later
+    - good night
+    - bye
+    - goodbye
+    - have a nice day
+    - see you around
+    - bye bye
+    - see you later
+    - tata
+    - see yaa
+    - gtg
+
+# # Affirm
+# - intent: affirm
+#   examples: |
+#     - yes
+#     - yup
+#     - yep
+#     - ya
+#     - indeed
+#     - of course
+#     - that sounds good
+#     - correct
+#     - I guess 
+#     - I guess so
+#     - ye
+#     - yas
+#     - yeah
+
+# # Deny
+# - intent: deny
+#   examples: |
+#     - no
+#     - n
+#     - nope
+#     - na
+#     - not interested
+#     - naa
+#     - never
+#     - I don't think so
+#     - don't like that
+#     - no way
+#     - not really
+#     - not really
+
+# # Recommendation
+# - intent: request_recommendation
+#   examples: |
+#     - Please tell me some restaurants
+#     - Please recommend some restaurants to me
+#     - Recommend some place to eat
+#     - tell me some good places to eat
+#     - tell me some good restaurants
+#     - Reccomend something
+
+# # Booking
+
+- intent: book_restaurant
+  examples: |
+    - I want to book [any restaurant](restaurant_name) on [25th May](date) at [7 pm](time)
+    - Can I make a reservation at [a restaurant](restaurant_name) for [tomorrow](date) at [8:30 pm](time)?
+    - Book [some place](restaurant_name) for [next Friday](date) at [1 pm](time)
+    - I'd like to reserve a table at [a cafe](restaurant_name)
+    - Make a booking for [a dining place](restaurant_name)
+    - I want to book
+    - Can I make a reservation?
+    - reservation
+    - book a hotel
+    - i want to eat 
+    - how can I book
+    - I would like to make a booking
+    - I would like to make a reservation
+    - I would like to book a table
+    - book a table
+    - book
+
+# Bot
+- intent: bot_challenge
+  examples: |
+    - are you a bot?
+    - are you a human?
+    - am I talking to a bot?
+    - am I talking to a human?
+    - who are you?
+    - what are you?
+    - you?
+    - who you
+    - who u
+    - who am I talking to 
+
+# Cancel Reservation
+- intent: cancel_reservation
+  examples: |
+    - I want to cancel my reservation
+    - cancel my booking
+    - I want to cancel my booking
+    - cancel my restaurant booking
+    - remove my restaurant booking
+    - cancel bokk 
+    - cancel boooking
+
+# - intent: inform
+#   examples: |
+#     - [Italian](cuisine)
+#     - [Banshankari](restaurant_location)
+#     - [4.3](rating)
+#     - [Olive Garden](restaurant_name)
+#     - [25th May](date)
+#     - [7:30 pm](time)
+  

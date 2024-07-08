@@ -1,0 +1,42 @@
+version: "3.1"
+
+rules:
+
+- rule: Say goodbye anytime the user says goodbye
+  steps:
+  - intent: goodbye
+  - action: utter_goodbye
+
+# Restaurant Form
+rules:
+- rule: Activate form
+  steps:
+  - intent: book_restaurant
+  - action: restaurant_form
+  - active_loop: restaurant_form
+
+- rule: Submit form
+  condition:
+  - active_loop: restaurant_form
+  steps:
+  - action: restaurant_form
+  - active_loop: null
+  - action: action_submit_form
+
+# - rule: Activate Restaurant Form
+#   steps:
+#   - intent: book_restaurant
+#   - action: restaurant_form
+#   - active_loop: restaurant_form
+  
+# - rules:
+#   - rule: Handle unknown input
+#     steps:
+#     - intent: '*'
+#     - action: action_default_response
+
+# - rule: Activate form
+#   steps:
+#   - intent: book_restaurant
+#   - action: restaurant_form
+#   - active_loop: restaurant_form

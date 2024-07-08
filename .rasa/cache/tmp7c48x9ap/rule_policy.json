@@ -1,0 +1,26 @@
+{
+  "lookup": {
+    "rules": {
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}, \"user\": {\"intent\": \"goodbye\"}}]": "utter_goodbye",
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}, \"user\": {\"intent\": \"goodbye\"}}, {\"prev_action\": {\"action_name\": \"utter_goodbye\"}, \"user\": {\"intent\": \"goodbye\"}}]": "action_listen",
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}, \"user\": {\"intent\": \"request_restaurant\"}}]": "restaurant_form",
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}, \"user\": {\"intent\": \"request_restaurant\"}}, {\"active_loop\": {\"name\": \"restaurant_form\"}, \"prev_action\": {\"action_name\": \"restaurant_form\"}, \"user\": {\"intent\": \"request_restaurant\"}}]": "action_listen"
+    },
+    "rule_only_slots": [],
+    "rule_only_loops": [],
+    "rules_for_loop_unhappy_path": {
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}}, {\"active_loop\": {\"name\": \"restaurant_form\"}, \"prev_action\": {\"action_name\": \"restaurant_form\"}, \"user\": {\"intent\": \"request_restaurant\"}}]": "do_not_predict_loop_action",
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}}, {\"active_loop\": {\"name\": \"restaurant_form\"}, \"prev_action\": {\"action_name\": \"restaurant_form\"}, \"slots\": {\"date\": [1.0], \"email\": [1.0], \"phone_number\": [1.0], \"restaurant_name\": [1.0], \"time\": [1.0], \"user_name\": [1.0]}, \"user\": {\"intent\": \"affirm\"}}]": "do_not_predict_loop_action"
+    },
+    "rules_not_in_stories": [
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}, \"user\": {\"intent\": \"goodbye\"}}]",
+      "handling active loops and forms - restaurant_form",
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}, \"user\": {\"intent\": \"request_restaurant\"}}]",
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}, \"user\": {\"intent\": \"goodbye\"}}, {\"prev_action\": {\"action_name\": \"utter_goodbye\"}, \"user\": {\"intent\": \"goodbye\"}}]",
+      "predicting default action with intent session_start",
+      "handling active loops and forms - restaurant_form - action_listen",
+      "predicting default action with intent restart",
+      "predicting default action with intent back"
+    ]
+  }
+}
