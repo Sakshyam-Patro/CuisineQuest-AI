@@ -1,0 +1,52 @@
+[
+  {
+    "tag_name": "entity",
+    "ids_to_tags": {
+      "1": "B-date",
+      "2": "I-date",
+      "3": "L-date",
+      "4": "U-date",
+      "5": "B-location",
+      "6": "I-location",
+      "7": "L-location",
+      "8": "U-location",
+      "9": "B-restaurant_name",
+      "10": "I-restaurant_name",
+      "11": "L-restaurant_name",
+      "12": "U-restaurant_name",
+      "13": "B-time",
+      "14": "I-time",
+      "15": "L-time",
+      "16": "U-time",
+      "17": "B-user_name",
+      "18": "I-user_name",
+      "19": "L-user_name",
+      "20": "U-user_name",
+      "0": "O"
+    },
+    "tags_to_ids": {
+      "B-date": 1,
+      "I-date": 2,
+      "L-date": 3,
+      "U-date": 4,
+      "B-location": 5,
+      "I-location": 6,
+      "L-location": 7,
+      "U-location": 8,
+      "B-restaurant_name": 9,
+      "I-restaurant_name": 10,
+      "L-restaurant_name": 11,
+      "U-restaurant_name": 12,
+      "B-time": 13,
+      "I-time": 14,
+      "L-time": 15,
+      "U-time": 16,
+      "B-user_name": 17,
+      "I-user_name": 18,
+      "L-user_name": 19,
+      "U-user_name": 20,
+      "O": 0
+    },
+    "num_tags": 21
+  }
+]

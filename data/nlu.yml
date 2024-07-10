@@ -42,6 +42,11 @@ nlu:
     - tata
     - see yaa
     - gtg
+    - Thank you so much
+    - Thx
+    - thxxx
+    - thanks
+    - thank you
 
 # # Affirm
 # - intent: affirm
@@ -134,10 +139,87 @@ nlu:
 
 # - intent: inform
 #   examples: |
-#     - [Italian](cuisine)
-#     - [Banshankari](restaurant_location)
-#     - [4.3](rating)
-#     - [Olive Garden](restaurant_name)
+#     - My name is [Sakshyam](user_name)
+#     - I am [Raj](user_name)
+#     - Im [Jacob] (user_name)
+#     - [Rahul](user_name)
+#     - Please call me [Lavanya](user_name)
+
+#     - I would like to go to [](restaurant_name)
+#     - [](restaurant_name)
+#     - Please book [](restaurant_name)
+
+#     - [5th june](date)
+#     - [8 september](date)
+#     - Please book for the date [12/4](date)
+#     - [18 February](date)
+
+#     - The location is [Banshankari](location)
+#     - The place I want to go is [Whitefield](location)
+#     - [HSR Layout](location)
+#     - [MG Road](location) would be good
+#     - [Olive Garden](restaurant_name) would be fine
 #     - [25th May](date)
 #     - [7:30 pm](time)
   
+# - intent: cuisine
+#   examples: |
+#     - Please provide some recommendation on cuisine
+#     - Provide some [italian](cuisine) recommendation
+#     - Can you suggest some [Chinese](cuisine) restaurants?
+#     - I'm looking for [Mexican](cuisine) food
+#     - What [Indian](cuisine) places do you recommend?
+#     - Any good [Thai](cuisine) restaurants?
+#     - I want to eat [French](cuisine) food
+#     - Recommend some [Japanese](cuisine) places
+#     - Where can I find good [Greek](cuisine) food?
+#     - [Italian](cuisine)
+#     - [Chinese](cuisine)
+#     - [Mexican](cuisine)
+#     - [Indian](cuisine)
+#     - [Thai](cuisine)
+#     - [French](cuisine)
+#     - [Japanese](cuisine)
+#     - [Greek](cuisine)
+
+# - intent: location
+#   examples: |
+#     - Please provide some recommendation on location
+#     - Please recommend something in [Banshankari](location)
+#     - I'm looking for restaurants in [Indiranagar](location)
+#     - Any good places to eat in [Koramangala](location)?
+#     - Recommend restaurants near [MG Road](location)
+#     - Where can I find good food in [Jayanagar](location)?
+#     - I want to dine in [Whitefield](location)
+#     - Any recommendations for [Electronic City](location)?
+#     - Suggest some places in [HSR Layout](location)
+#     - [Banshankari](location)
+#     - [Indiranagar](location)
+#     - [Koramangala](location)
+#     - [MG Road](location)
+#     - [Jayanagar](location)
+#     - [Whitefield](location)
+#     - [Electronic City](location)
+#     - [HSR Layout](location)
+
+# - intent: cuisine_and_location
+#   examples: |
+#     - I want [Italian](cuisine) food in [Indiranagar](location)
+#     - Any [Chinese](cuisine) restaurants in [Koramangala](location)?
+#     - Where can I find [Mexican](cuisine) food in [Banshankari](location)?
+#     - Recommend [Indian](cuisine) places in [Whitefield](location)
+#     - [Thai](cuisine) restaurants near [MG Road](location)
+#     - [French](cuisine) dining options in [Jayanagar](location)
+#     - Best [Japanese](cuisine) in [HSR Layout](location)
+#     - [Greek](cuisine) food in [Electronic City](location)
+
+
+# Time
+- intent: ask_time
+  examples: |
+    - What time is it?
+    - Can you tell me the current time?
+    - What's the time now?
+    - Do you know what time it is?
+    - Tell me the time please
+    - time now

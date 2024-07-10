@@ -6,26 +6,32 @@ intents:
   # - affirm
 #   - deny
 #   - request_recommendation
+  # - cuisine
+  # - location
   - book_restaurant
   - bot_challenge
   - cancel_reservation
-
+  # - inform
+  - ask_time
+  # - cuisine_and_location
 
 entities:
   - user_name
   - restaurant_name
-  - phone_number
-  - email
   - date
   - time
+  - email
+  - number
 #   - restaurant_location
-#   - cuisine
+  - cuisine
+  - location
 #   - approx_cost
 slots:
   user_name:
     type: text
     mappings:
       - type: from_text
+        # entity: user_name
         conditions:
           - active_loop: restaurant_form
             requested_slot: user_name
@@ -33,6 +39,7 @@ slots:
     type: text
     mappings:
       - type: from_text
+        # entity: restaurant_name
         conditions:
           - active_loop: restaurant_form
             requested_slot: restaurant_name
@@ -40,6 +47,7 @@ slots:
     type: text
     mappings:
       - type: from_text
+        # entity: date
         conditions:
           - active_loop: restaurant_form
             requested_slot: date
@@ -47,6 +55,7 @@ slots:
     type: text
     mappings:
       - type: from_text
+        # entity: time
         conditions:
           - active_loop: restaurant_form
             requested_slot: time
@@ -54,6 +63,7 @@ slots:
     type: text
     mappings:
       - type: from_text
+        # entity: email
         conditions:
           - active_loop: restaurant_form
             requested_slot: email
@@ -61,13 +71,22 @@ slots:
     type: text
     mappings:
       - type: from_text
+        # entity: number
         conditions:
           - active_loop: restaurant_form
             requested_slot: phone_number
-
-actions:
-  - validate_restaurant_form
-  - action_submit_form
+  cuisine:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: cuisine
+  location:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: location
+  # - action_recommend_by_cost
+  # - action_recommend_by_cuisine_and_location
 
 forms:
   restaurant_form:
@@ -78,8 +97,49 @@ forms:
       - time
       - email
       - phone_number
+  # cuisine_form:
+  #   cuisine:
+  #     - type: from_text
+  #       entity: cuisine
+  # location_form:
+  #   location:
+  #     - type: from_text
+  #       entity: location
+
+actions:
+  # - restaurant_form
+  - action_submit_form
+  - validate_restaurant_form
+  - action_reset_booking_form
+  - action_tell_time
+  # - action_recommend_by_cuisine
+  # - action_recommend_by_location
 
 responses:
+  utter_ask_user_name:
+    - text: "What is your name?"
+
+  utter_ask_restaurant_name:
+    - text: "which restaurant would you like to book?"
+
+  utter_ask_date:
+    - text: "What date would you like to book?"
+
+  utter_ask_time:
+    - text: "What time would you like you book?"
+
+  utter_ask_email:
+    - text: "What is your email?"
+
+  utter_ask_phone_number:
+    - text: "What is your phone number?"
+  
+  utter_ask_cuisine:
+    - text: "what cuisine would you like to look into?"
+
+  utter_ask_location:
+    - text: "What location would you like to look into?"
+
   utter_cancellation_confirmation:
     - text: "Your reservation has been canceled for now."
 
@@ -104,7 +164,7 @@ responses:
 
 session_config:
   session_expiration_time: 60
-  carry_over_slots_to_new_session: true
+  carry_over_slots_to_new_session: false
 
 #   utter_greet:
 #     - text: "Hello! How can I assist you today? Please feel free to book a restaurant."

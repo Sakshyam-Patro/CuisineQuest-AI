@@ -7,21 +7,51 @@ rules:
   - intent: goodbye
   - action: utter_goodbye
 
-# Restaurant Form
-rules:
-- rule: Activate form
+# Bot Challenge
+- rule: Bot Challenge
   steps:
-  - intent: book_restaurant
-  - action: restaurant_form
-  - active_loop: restaurant_form
+  - intent: bot_challenge
+  - action: utter_iamabot
 
+# Activate Restaurant Form
+- rule: Activate form
+  condition:
+    - active_loop: null
+  steps:
+    - intent: book_restaurant
+    - action: restaurant_form
+    - active_loop: restaurant_form
+
+# Submit form
 - rule: Submit form
   condition:
   - active_loop: restaurant_form
   steps:
   - action: restaurant_form
   - active_loop: null
+  - slot_was_set: 
+    - requested_slot: null
   - action: action_submit_form
+
+# - rule: Cancel reservation
+#   steps:
+#     - intent: cancel_reservation
+#     - action: utter_cancellation_confirmation
+#     - action: action_deactivate_loop
+#     - action: action_reset_booking_form
+
+# - rule: Activate form for new booking
+#   steps:
+#     - intent: book_restaurant
+#     - action: action_reset_booking_form
+#     - action: restaurant_form
+#     - active_loop: restaurant_form
+
+# Tell the time
+- rule: Tell the current time
+  steps:
+    - intent: ask_time
+    - action: action_tell_time
 
 # - rule: Activate Restaurant Form
 #   steps:

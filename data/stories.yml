@@ -13,8 +13,30 @@ stories:
 #     - action: action_submit_form
     # - action: utter_ask_continue
 
+# - story: Book a restaurant
+#   steps:
+#   - intent: greet
+#   - action: utter_greet
+#   - intent: book_restaurant
+#   - action: restaurant_form
+#   - active_loop: restaurant_form
+#   - slot_was_set:
+#     - requested_slot: user_name
+#   - slot_was_set:
+#     - requested_slot: restaurant_name
+#   - slot_was_set:
+#     - requested_slot: date
+#   - slot_was_set:
+#     - requested_slot: time
+#   - slot_was_set:
+#     - requested_slot: email
+#   - slot_was_set:
+#     - requested_slot: phone_number
+#   - active_loop: null
+#   - action: action_submit_form
 
-- story: greet and book a restaurant
+
+- story: Book a restaurant
   steps:
     - intent: greet
     - action: utter_greet
@@ -32,150 +54,88 @@ stories:
     - active_loop: null
     - action: action_submit_form
 
-# - story: Book restaurant directly
+- story: book after cancellation
+  steps:
+    - intent: book_restaurant
+    - action: restaurant_form
+    - active_loop: restaurant_form
+    - intent: cancel_reservation
+    - action: utter_cancellation_confirmation
+    - action: action_deactivate_loop
+    - action: action_reset_booking_form
+    - intent: book_restaurant
+    - action: restaurant_form
+    - active_loop: restaurant_form
+
+# - story: greet and book a restaurant
 #   steps:
+#     - intent: greet
+#     - action: utter_greet
 #     - intent: book_restaurant
 #     - action: restaurant_form
 #     - active_loop: restaurant_form
 #     - active_loop: null
-    
-#     - action: utter_confirm_booking
-    # - action: utter_ask_continue
+#     - action: action_submit_form
 
-# - story: Recommend by cuisine
+
+# # Cuisine
+# - story: direct cuisine recommendation
 #   steps:
-#     - intent: request_recommendation
-#     - action: utter_ask_cuisine
-#     - intent: inform
-#       entities:
-#         - cuisine: "Italian"
-#     - action: action_recommend_by_cuisine
-#     - action: utter_ask_continue
+#   - intent: cuisine
+#   - action: action_recommend_by_cuisine
 
-# - story: Recommend by location
+# - story: recommend by cuisine
 #   steps:
-#     - intent: request_recommendation
-#     - action: utter_ask_location
-#     - intent: inform
-#       entities:
-#         - restaurant_location: "downtown"
-#     - action: action_recommend_by_location
-#     - action: utter_ask_continue
+#   - intent: greet
+#   - action: utter_greet
+#   - intent: cuisine
+#   - action: utter_ask_cuisine
+#   - intent: cuisine
+#   - action: action_recommend_by_cuisine
 
-# - story: Recommend by cost
+# # Location
+
+# - story: direct location recommendation
 #   steps:
-#     - intent: request_recommendation
-#     - action: utter_ask_approx_cost
-#     - intent: inform
-#       entities:
-#         - approx_cost: "$50"
-#     - action: action_recommend_by_approx_cost
-#     - action: utter_ask_continue
+#   - intent: location
+#   - action: action_recommend_by_location
 
-# - story: Recommend by rating
+# - story: recommend by location
 #   steps:
-#     - intent: request_recommendation
-#     - action: utter_ask_rating_preference
-#     - intent: affirm
-#     - action: action_recommend_by_rating
-#     - action: utter_ask_continue
+#   - intent: greet
+#   - action: utter_greet
+#   - intent: location
+#   - action: utter_ask_location
+#   - intent: location
+#   - action: action_recommend_by_location
 
-# # - story: Combined recommendation
-# #   steps:
-# #     - intent: request_recommendation
-# #     - action: utter_ask_cuisine
-# #     - intent: inform
-# #       entities:
-# #         - cuisine: "Italian"
-# #     - action: utter_ask_location
-# #     - intent: inform
-# #       entities:
-# #         - restaurant_location: "downtown"
-# #     - action: utter_ask_approx_cost
-# #     - intent: inform
-# #       entities:
-# #         - approx_cost: "$50"
-# #     - action: action_recommend_combined
-# #     - action: utter_ask_continue
+  # Cuisine and Location
 
-# # - story: Cancel reservation
-# #   steps:
-# #     - intent: cancel_reservation
-# #     - action: utter_ask_reservation_details
-# #     - intent: inform
-# #       entities:
-# #         - restaurant_name: "Olive Garden"
-# #     - action: action_cancel_reservation
-# #     - action: utter_ask_continue
-
-# # - story: Get restaurant details
-# #   steps:
-# #     - intent: request_restaurant_details
-# #     - action: utter_ask_restaurant_name
-# #     - intent: inform
-# #       entities:
-# #         - restaurant_name: "Olive Garden"
-# #     - action: action_restaurant_details
-# #     - action: utter_ask_continue
-
-# - story: Happy path
+# - story: cuisine and location recommendation
 #   steps:
-#     - intent: greet
-#     - action: utter_greet
-#     - intent: request_recommendation
-#     - action: utter_ask_cuisine
-#     - intent: inform
-#       entities:
-#         - cuisine: "Italian"
-#     - action: action_recommend_by_cuisine
-#     - intent: book_restaurant
-#       entities:
-#         - restaurant_name: "Olive Garden"
-#     - action: restaurant_form
-#     - active_loop: restaurant_form
-#     - active_loop: null
-#     - action: utter_confirm_booking
-#     - intent: thank
-#     - action: utter_goodbye
+#   - intent: cuisine_and_location
+#   - action: action_recommend_by_cuisine_and_location
 
-# - story: Unhappy path - change mind
+# - story: ask for cuisine then location
 #   steps:
-#     - intent: greet
-#     - action: utter_greet
-#     - intent: request_recommendation
-#     - action: utter_ask_cuisine
-#     - intent: inform
-#       entities:
-#         - cuisine: "Italian"
-#     - action: action_recommend_by_cuisine
-#     - intent: deny
-#     - action: utter_ask_continue
-#     - intent: request_recommendation
-#     - action: utter_ask_cuisine
-#     - intent: inform
-#       entities:
-#         - cuisine: "Chinese"
-#     - action: action_recommend_by_cuisine
-#     - intent: affirm
-#     - action: utter_goodbye
+#   - intent: cuisine
+#   - action: action_recommend_by_cuisine
+#   - intent: location
+#   - action: action_recommend_by_cuisine_and_location
 
-# - story: Chitchat
+# - story: ask for location then cuisine
 #   steps:
-#     - intent: chitchat
-#     - action: utter_chitchat
-#     - action: utter_ask_continue
+#   - intent: location
+#   - action: action_recommend_by_location
+#   - intent: cuisine
+#   - action: action_recommend_by_cuisine_and_location
 
-
-# - story: Fallback
+# - story: greet and ask for cuisine and location
 #   steps:
-#     - intent: nlu_fallback
-#     - action: utter_default
-#     - action: utter_ask_continue
-
-
-
-
-
+#   - intent: greet
+#   - action: utter_greet
+#   - intent: cuisine_and_location
+#   - action: action_recommend_by_cuisine_and_location
 
 
 

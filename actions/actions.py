@@ -512,52 +512,30 @@
 
 #         return []
 
-
-# import logging
-from typing import Any, Coroutine, Text, Dict, List, Union
-from rasa_sdk import Action, Tracker
+import logging
+from datetime import datetime, timedelta
+from typing import Any, Text, Dict, List
+from pymongo import MongoClient
+from rasa_sdk import Tracker
 from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.forms import FormValidationAction
-from rasa_sdk.events import SlotSet, EventType
-from datetime import datetime, timedelta
+from rasa_sdk.events import AllSlotsReset, Restarted
+
+from rasa_sdk.types import DomainDict
+from rasa_sdk import Action
+from rasa_sdk.events import EventType
 import parsedatetime as pdt
 import re
-from pymongo import MongoClient
-from rasa_sdk.types import DomainDict
-from pymongo.errors import PyMongoError
-# from logging.handlers import RotatingFileHandler
-import os
-# Set up logging
-# logging.basicConfig(
-#     level=logging.DEBUG,
-#     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-#     filename='actions.log',  # Log file name
-#     filemode='w'  # Overwrite the log file on each run
-# )
-# logger = logging.getLogger(__name__)
 
-# if not os.path.exists('logs'):
-#     os.makedirs('logs')
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
-# # Set up logging
-# logger = logging.getLogger(__name__)
-# logger.setLevel(logging.DEBUG)
-
-# # Create handlers
-# c_handler = logging.StreamHandler()  # Console handler
-# f_handler = RotatingFileHandler('logs/actions.log', maxBytes=10*1024*1024, backupCount=5)  # File handler
-
-# # Create formatters and add it to handlers
-# log_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-# c_handler.setFormatter(log_format)
-# f_handler.setFormatter(log_format)
-
-# # Add handlers to the logger
-# logger.addHandler(c_handler)
-# logger.addHandler(f_handler)
-
-
-# MongoDB connection
+file_handler = logging.FileHandler('rasa_actions.log')
+file_handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+# Initialize MongoDB client
 client = MongoClient("mongodb://localhost:27017/")
 db = client["Restaurants"]
 collection = db["Zomato"]
@@ -566,70 +544,215 @@ booking_collection = db["Bookings"]
 # Initialize parsedatetime
 cal = pdt.Calendar()
 
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+# class ValidateRestaurantForm(FormValidationAction):
+#     def name(self) -> Text:
+#         return "validate_restaurant_form"
+
+    # async def required_slots(
+    #     self,
+    #     slots_mapped_in_domain: List[Text],
+    #     dispatcher: CollectingDispatcher,
+    #     tracker: Tracker,
+    #     domain: Dict[Text, Any],
+    # ) -> List[Text]:
+    #     unfilled_slots = []
+
+    #     for slot_name in slots_mapped_in_domain:
+    #         if tracker.slots.get(slot_name) is None:
+    #             dispatcher.utter_message(template=f"utter_ask_{slot_name}")
+    #             unfilled_slots.append(slot_name)
+
+    #     return unfilled_slots
+
+    # def validate_user_name(
+    #     self,
+    #     slot_value: Any,
+    #     dispatcher: CollectingDispatcher,
+    #     tracker: Tracker,
+    #     domain: DomainDict,
+    # ) -> Dict[Text, Any]:
+    #     logger.debug(f"Validating user_name slot with value: {slot_value}")
+    #     if slot_value is None:
+    #         dispatcher.utter_message(text="Please provide a valid name.")
+    #         return {"user_name": None}
+    #     dispatcher.utter_message(text=f"Sure, {slot_value}")
+    #     return {"user_name": slot_value}
+
+        # if isinstance(slot_value, str) and slot_value.strip():
+        #     return {"user_name": slot_value}  # Valid name provided
+        # else:
+        #     if not slot_value:
+        #         logger.debug("Slot value is empty or None.")
+        #         dispatcher.utter_message(text="Please provide a valid name.")
+        #     return {"user_name": None}  # Return None to indicate slot is not filled yet
+
+    # def validate_restaurant_name(
+    #     self,
+    #     slot_value: Any,
+    #     dispatcher: CollectingDispatcher,
+    #     tracker: Tracker,
+    #     domain: DomainDict,
+    # ) -> Dict[Text, Any]:
+    #     logger.debug(f"Validating restaurant_name slot with value: {slot_value}")
+    #     if collection.find_one({"name": slot_value}):
+    #         return {"restaurant_name": slot_value}
+    #     else:
+    #         logger.debug("Restaurant name not found in database.")
+    #         dispatcher.utter_message(text="Sorry, I couldn't find that restaurant. Please try again.")
+    #         return {"restaurant_name": None}
+
+    # def validate_date(
+    #     self,
+    #     slot_value: Any,
+    #     dispatcher: CollectingDispatcher,
+    #     tracker: Tracker,
+    #     domain: DomainDict,
+    # ) -> Dict[Text, Any]:
+    #     logger.debug(f"Validating date slot with value: {slot_value}")
+    #     try:
+    #         booking_date = datetime.strptime(slot_value, "%Y-%m-%d").date()
+    #         today = datetime.now().date()
+    #         if not (today <= booking_date <= today + timedelta(days=30)):
+    #             logger.debug("Invalid date provided.")
+    #             dispatcher.utter_message(text="Please provide a date within the next 30 days.")
+    #             return {"date": None}
+    #         return {"date": slot_value}
+    #     except ValueError:
+    #         logger.debug("Invalid date format provided.")
+    #         dispatcher.utter_message(text="Please provide a valid date in the format YYYY-MM-DD.")
+    #         return {"date": None}
+
+    # def validate_time(
+    #     self,
+    #     slot_value: Any,
+    #     dispatcher: CollectingDispatcher,
+    #     tracker: Tracker,
+    #     domain: DomainDict,
+    # ) -> Dict[Text, Any]:
+    #     logger.debug(f"Validating time slot with value: {slot_value}")
+    #     try:
+    #         time_formats = ["%I:%M %p", "%I %p", "%I:%M%p", "%I%p"]
+    #         parsed_time = next((datetime.strptime(slot_value.upper(), fmt).time() for fmt in time_formats if self._try_parse_time(slot_value.upper(), fmt)), None)
+    #         if not parsed_time:
+    #             logger.debug("Invalid time format provided.")
+    #             raise ValueError
+            
+    #         if not (datetime.strptime("10:00 AM", "%I:%M %p").time() <= parsed_time <= datetime.strptime("10:00 PM", "%I:%M %p").time()):
+    #             logger.debug("Time outside valid range provided.")
+    #             dispatcher.utter_message(text="Please provide a time between 10:00 AM and 10:00 PM.")
+    #             return {"time": None}
+            
+    #         return {"time": parsed_time.strftime("%I:%M %p")}  # Store in 12-hour format
+    #     except ValueError:
+    #         logger.debug("Invalid time format provided.")
+    #         dispatcher.utter_message(text="Please provide a valid time (e.g., 7 pm, 9:30 pm).")
+    #         return {"time": None}
+
+    # def validate_email(
+    #     self,
+    #     slot_value: Any,
+    #     dispatcher: CollectingDispatcher,
+    #     tracker: Tracker,
+    #     domain: DomainDict,
+    # ) -> Dict[Text, Any]:
+    #     logger.debug(f"Validating email slot with value: {slot_value}")
+    #     if "@" in slot_value:
+    #         return {"email": slot_value}
+    #     else:
+    #         logger.debug("Invalid email format provided.")
+    #         dispatcher.utter_message(text="Please provide a valid email address.")
+    #         return {"email": None}
+
+    # def validate_phone_number(
+    #     self,
+    #     slot_value: Any,
+    #     dispatcher: CollectingDispatcher,
+    #     tracker: Tracker,
+    #     domain: DomainDict,
+    # ) -> Dict[Text, Any]:
+    #     logger.debug(f"Validating phone_number slot with value: {slot_value}")
+    #     if slot_value.isdigit() and len(slot_value) == 10:
+    #         return {"phone_number": slot_value}
+    #     else:
+    #         logger.debug("Invalid phone number format provided.")
+    #         dispatcher.utter_message(text="Please provide a valid 10-digit phone number.")
+    #         return {"phone_number": None}
 class ValidateRestaurantForm(FormValidationAction):
     def name(self) -> Text:
-        return "restaurant_form"
-
-    async def required_slots(
-        self,
-        slots_mapped_in_domain: List[Text],
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
-    ) -> List[Text]:
-        unfilled_slots = []
-
-        # Check each slot if it's already filled or needs to be requested
-        for slot_name in slots_mapped_in_domain:
-            if tracker.slots.get(slot_name) is None:
-                unfilled_slots.append(slot_name)
-
-        return unfilled_slots if unfilled_slots else []
+        return "validate_restaurant_form"
 
     def validate_user_name(
         self,
         slot_value: Any,
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
-        domain: Dict[Text, Any],
+        domain: DomainDict,
     ) -> Dict[Text, Any]:
-        if isinstance(slot_value, str) and slot_value.strip():
-            return {"user_name": slot_value}  # Valid name provided
+        # Basic validation for user name
+        if len(slot_value.strip()) > 0:
+            return {"user_name": slot_value}
         else:
-            if not slot_value:
-                # Slot value is None or empty string
-                dispatcher.utter_message(text="Please provide a valid name.")
-            return {"user_name": None}  # Return None to indicate slot is not filled yet
+            dispatcher.utter_message(text="Please enter a valid name.")
+            return {"user_name": None}
 
     def validate_restaurant_name(
         self,
         slot_value: Any,
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
-        domain: Dict[Text, Any],
+        domain: DomainDict,
     ) -> Dict[Text, Any]:
-        if collection.find_one({"name": slot_value}):
-            return {"restaurant_name": slot_value}
-        else:
-            dispatcher.utter_message(text="Sorry, I couldn't find that restaurant. Please try again.")
+        try:
+            restaurant = collection.find_one({"name": {"$regex": f"^{re.escape(slot_value)}$", "$options": "i"}})
+            if restaurant:
+                return {"restaurant_name": restaurant['name']}
+            else:
+                dispatcher.utter_message(text=f"Sorry, {slot_value} is not in our database. Please try another restaurant.")
+                return {"restaurant_name": None}
+        except Exception as e:
+            dispatcher.utter_message(text="Sorry, I couldn't verify the restaurant name. Please try again.")
             return {"restaurant_name": None}
-
+        
+    # def validate_date(
+    #     self,
+    #     slot_value: Any,
+    #     dispatcher: CollectingDispatcher,
+    #     tracker: Tracker,
+    #     domain: DomainDict,
+    # ) -> Dict[Text, Any]:
+    #     try:
+    #         # Try to parse the date
+    #         date = datetime.strptime(slot_value, "%d %B").date()
+    #         # Check if the date is in the future
+    #         today = datetime.now().date()
+    #         if date < today:
+    #             date = date.replace(year=today.year + 1)
+    #         return {"date": date.strftime("%d %B %Y")}
+    #     except ValueError:
+    #         dispatcher.utter_message(text="That's not a valid date. Please enter a date in the format 'DD Month' (e.g., '25 December').")
+    #         return {"date": None}
     def validate_date(
         self,
         slot_value: Any,
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
-        domain: Dict[Text, Any],
+        domain: DomainDict,
     ) -> Dict[Text, Any]:
         try:
-            booking_date = datetime.strptime(slot_value, "%Y-%m-%d").date()
+            # Try to parse the date
+            current_year = datetime.now().year
+            date = datetime.strptime(f"{slot_value} {current_year}", "%d %B %Y").date()
+            # Check if the date is in the future
             today = datetime.now().date()
-            if not (today <= booking_date <= today + timedelta(days=30)):
-                dispatcher.utter_message(text="Please provide a date within the next 30 days.")
-                return {"date": None}
-            return {"date": slot_value}
+            if date < today:
+                date = date.replace(year=current_year + 1)
+            return {"date": date.strftime("%d %B %Y")}
         except ValueError:
-            dispatcher.utter_message(text="Please provide a valid date in the format YYYY-MM-DD.")
+            dispatcher.utter_message(text="That's not a valid date. Please enter a date in the format 'DD Month' (e.g., '3 March').")
             return {"date": None}
 
     def validate_time(
@@ -637,67 +760,53 @@ class ValidateRestaurantForm(FormValidationAction):
         slot_value: Any,
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
-        domain: Dict[Text, Any],
+        domain: DomainDict,
     ) -> Dict[Text, Any]:
         try:
-            time_formats = ["%I:%M %p", "%I %p", "%I:%M%p", "%I%p"]
-            parsed_time = next((datetime.strptime(slot_value.upper(), fmt).time() for fmt in time_formats if self._try_parse_time(slot_value.upper(), fmt)), None)
-            if not parsed_time:
-                raise ValueError
-            
-            if not (datetime.strptime("10:00 AM", "%I:%M %p").time() <= parsed_time <= datetime.strptime("10:00 PM", "%I:%M %p").time()):
-                dispatcher.utter_message(text="Please provide a time between 10:00 AM and 10:00 PM.")
+            # Try to parse the time
+            time = datetime.strptime(slot_value, "%I %p").time()
+            return {"time": time.strftime("%I:%M %p")}
+        except ValueError:
+            try:
+                # Try another common format
+                time = datetime.strptime(slot_value, "%I:%M %p").time()
+                return {"time": time.strftime("%I:%M %p")}
+            except ValueError:
+                dispatcher.utter_message(text="That's not a valid time. Please enter a time in the format 'HH:MM AM/PM' or 'HH AM/PM' (e.g., '07:30 PM' or '7 PM').")
                 return {"time": None}
-            
-            return {"time": parsed_time.strftime("%I:%M %p")}  # Store in 12-hour format
-        except ValueError:
-            dispatcher.utter_message(text="Please provide a valid time (e.g., 7 pm, 9:30 pm).")
-            return {"time": None}
-
-    def _try_parse_time(self, time_str: Text, time_format: Text) -> bool:
-        try:
-            datetime.strptime(time_str, time_format)
-            return True
-        except ValueError:
-            return False
 
     def validate_email(
         self,
         slot_value: Any,
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
-        domain: Dict[Text, Any],
+        domain: DomainDict,
     ) -> Dict[Text, Any]:
-        if "@" in slot_value:
+        if re.match(r"[^@]+@[^@]+\.[^@]+", slot_value):
             return {"email": slot_value}
         else:
-            dispatcher.utter_message(text="Please provide a valid email address.")
+            dispatcher.utter_message(text="Please enter a valid email address.")
             return {"email": None}
-        
+
     def validate_phone_number(
         self,
         slot_value: Any,
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
-        domain: Dict[Text, Any],
+        domain: DomainDict,
     ) -> Dict[Text, Any]:
-        if slot_value.isdigit() and len(slot_value) == 10:
+        if len(slot_value) == 10 and slot_value.isdigit():
             return {"phone_number": slot_value}
         else:
-            dispatcher.utter_message(text="Please provide a valid 10-digit phone number.")
+            dispatcher.utter_message(text="Please enter a valid 10-digit phone number.")
             return {"phone_number": None}
-
-
 class ActionSubmitForm(Action):
     def name(self) -> Text:
         return "action_submit_form"
 
-    async def run(
-        self,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
-    ) -> List[EventType]:
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         user_name = tracker.get_slot("user_name")
         restaurant_name = tracker.get_slot("restaurant_name")
         date = tracker.get_slot("date")
@@ -705,30 +814,218 @@ class ActionSubmitForm(Action):
         email = tracker.get_slot("email")
         phone_number = tracker.get_slot("phone_number")
 
-             # Check if all required slots are filled
-        if not all([user_name, restaurant_name, date, time, email, phone_number]):
-            # Prompt the user to fill all the required details
-            dispatcher.utter_message(text="Please fill all the required details to book the restaurant.")
-            return [SlotSet("restaurant_form", None)]  # Reset the form to ensure it stays active
-
-        booking_details = {
-            "user_name": user_name,
-            "restaurant_name": restaurant_name,
-            "date": date,
-            "time": time,
-            "email": email,
-            "phone_number": phone_number,
-        }
-
-        # Insert booking details into the bookings collection
-        booking_collection.insert_one(booking_details)
-
-        dispatcher.utter_message(response="utter_confirm_booking", 
-                                 user_name=user_name, 
-                                 restaurant_name=restaurant_name, 
-                                 date=date, 
-                                 time=time, 
-                                 email=email, 
+        dispatcher.utter_message(response="utter_confirm_booking",
+                                 user_name=user_name,
+                                 restaurant_name=restaurant_name,
+                                 date=date,
+                                 time=time,
+                                 email=email,
                                  phone_number=phone_number)
 
-        return [SlotSet(slot_name, None) for slot_name in booking_details.keys()]
+        return []
+
+# Tell the time
+class ActionTellTime(Action):
+    def name(self) -> Text:
+        return "action_tell_time"
+
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        
+        current_time = datetime.now().strftime("%H:%M")
+        message = f"The current time is {current_time}."
+        
+        dispatcher.utter_message(text=message)
+        
+        return []
+    class ActionResetBookingForm(Action):
+        def name(self) -> Text:
+            return "action_reset_booking_form"
+
+        def run(self, dispatcher: CollectingDispatcher,
+                tracker: Tracker,
+                domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+            return [AllSlotsReset(), Restarted()]
+        
+# class ActionSubmitForm(Action):
+#     def name(self) -> Text:
+#         return "action_submit_form"
+
+#     async def run(
+#         self,
+#         dispatcher: CollectingDispatcher,
+#         tracker: Tracker,
+#         domain: DomainDict,
+#     ) -> List[EventType]:
+#         user_name = tracker.get_slot("user_name")
+#         restaurant_name = tracker.get_slot("restaurant_name")
+#         date = tracker.get_slot("date")
+#         time = tracker.get_slot("time")
+#         email = tracker.get_slot("email")
+#         phone_number = tracker.get_slot("phone_number")
+
+#         # Check if all required slots are filled
+#         if not all([user_name, restaurant_name, date, time, email, phone_number]):
+#             logger.debug("Not all required slots are filled.")
+#             dispatcher.utter_message(text="Please fill all the required details to book the restaurant.")
+#             return []  # Return an empty list instead of trying to set a non-existent slot
+
+#         booking_details = {
+#             "user_name": user_name,
+#             "restaurant_name": restaurant_name,
+#             "date": date,
+#             "time": time,
+#             "email": email,
+#             "phone_number": phone_number,
+#         }
+
+#         # Insert booking details into the bookings collection
+#         booking_collection.insert_one(booking_details)
+
+#         dispatcher.utter_message(response="utter_confirm_booking", 
+#                                  user_name=user_name, 
+#                                  restaurant_name=restaurant_name, 
+#                                  date=date, 
+#                                  time=time, 
+#                                  email=email, 
+#                                  phone_number=phone_number)
+        
+#         return []
+
+#         return [SlotSet(slot_name, None) for slot_name in ["user_name", "restaurant_name", "date", "time", "email", "phone_number"]]
+
+
+# # Cuisine Recommendation 
+# class ActionRecommendByCuisine(Action):
+#     def name(self) -> Text:
+#         return "action_recommend_by_cuisine"
+
+#     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+#         cuisine = next(tracker.get_latest_entity_values("cuisine"), None)
+        
+#         if not cuisine:
+#             last_message = tracker.latest_message.get('text')
+#             if last_message and len(last_message.split()) <= 3:  # Assume it's a cuisine if it's a short phrase
+#                 cuisine = last_message
+#             else:
+#                 dispatcher.utter_message(text="What cuisine would you like to look into?")
+#                 return []
+
+#         try:
+#             logger.debug(f"Searching for cuisine: {cuisine}")
+            
+#             # Query MongoDB for top 5 restaurants of the specified cuisine
+#             top_restaurants = list(collection.find(
+#                 {"cuisines": {"$regex": cuisine, "$options": "i"}}
+#             ).sort("rate", -1).limit(5))
+
+#             logger.debug(f"Query result: {top_restaurants}")
+
+#             if not top_restaurants:
+#                 dispatcher.utter_message(text=f"I'm sorry, but I couldn't find any {cuisine} restaurants in our database.")
+#                 return []
+
+#             response = f"Here are the top 5 {cuisine} restaurants:\n\n"
+#             for i, restaurant in enumerate(top_restaurants, 1):
+#                 name = restaurant.get("name", "Unknown")
+#                 rate = restaurant.get("rate", "N/A")
+#                 response += f"{i}. {name} (Rating: {rate})\n"
+
+#             dispatcher.utter_message(text=response)
+#         except Exception as e:
+#             logger.error(f"Error in action_recommend_by_cuisine: {str(e)}")
+#             dispatcher.utter_message(text="I'm sorry, but I encountered an error while fetching restaurant recommendations. Please try again later.")
+
+#         return []
+
+# # Location Recommendation 
+# class ActionRecommendByLocation(Action):
+#     def name(self) -> Text:
+#         return "action_recommend_by_location"
+
+#     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+#         location = tracker.get_slot("location")
+#         cuisine = tracker.get_slot("cuisine")
+
+#         if not location:
+#             dispatcher.utter_message(text="I'm sorry, but I need to know which location you're interested in.")
+#             return []
+
+#         try:
+#             logger.debug(f"Searching for location: {location}, cuisine: {cuisine}")
+
+#             # Base query
+#             query = {"location": {"$regex": location, "$options": "i"}}
+
+#             # Add cuisine to query if provided
+#             if cuisine:
+#                 query["cuisines"] = {"$regex": cuisine, "$options": "i"}
+
+#             # Query MongoDB for top 5 restaurants in the specified location (and cuisine, if provided)
+#             top_restaurants = list(collection.find(query).sort("rate", -1).limit(5))
+
+#             logger.debug(f"Query result: {top_restaurants}")
+
+#             if not top_restaurants:
+#                 message = f"I'm sorry, but I couldn't find any restaurants in {location}"
+#                 if cuisine:
+#                     message += f" serving {cuisine} cuisine"
+#                 message += "."
+#                 dispatcher.utter_message(text=message)
+#                 return []
+
+#             response = f"Here are the top 5 restaurants in {location}"
+#             if cuisine:
+#                 response += f" serving {cuisine} cuisine"
+#             response += ":\n\n"
+
+#             for i, restaurant in enumerate(top_restaurants, 1):
+#                 name = restaurant.get("name", "Unknown")
+#                 rate = restaurant.get("rate", "N/A")
+#                 cuisines = restaurant.get("cuisines", "Various")
+#                 response += f"{i}. {name} (Rating: {rate}, Cuisine: {cuisines})\n"
+
+#             dispatcher.utter_message(text=response)
+#         except Exception as e:
+#             logger.error(f"Error in action_recommend_by_location: {str(e)}")
+#             dispatcher.utter_message(text="I'm sorry, but I encountered an error while fetching restaurant recommendations. Please try again later.")
+
+#         return []
+    
+
+# class ActionRecommendByCuisineAndLocation(Action):
+#     def name(self) -> Text:
+#         return "action_recommend_by_cuisine_and_location"
+
+#     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+#         cuisine = tracker.get_slot("cuisine")
+#         location = tracker.get_slot("location")
+
+#         if not cuisine or not location:
+#             dispatcher.utter_message(text="I need both a cuisine and a location to give you recommendations.")
+#             return []
+
+#         try:
+#             query = {
+#                 "cuisines": {"$regex": cuisine, "$options": "i"},
+#                 "location": {"$regex": location, "$options": "i"}
+#             }
+#             top_restaurants = list(collection.find(query).sort("rate", -1).limit(5))
+
+#             if not top_restaurants:
+#                 dispatcher.utter_message(text=f"I'm sorry, but I couldn't find any {cuisine} restaurants in {location}.")
+#                 return []
+
+#             response = f"Here are the top 5 {cuisine} restaurants in {location}:\n\n"
+#             for i, restaurant in enumerate(top_restaurants, 1):
+#                 name = restaurant.get("name", "Unknown")
+#                 rate = restaurant.get("rate", "N/A")
+#                 response += f"{i}. {name} (Rating: {rate})\n"
+
+#             dispatcher.utter_message(text=response)
+#         except Exception as e:
+#             logger.error(f"Error in action_recommend_by_cuisine_and_location: {str(e)}")
+#             dispatcher.utter_message(text="I'm sorry, but I encountered an error while fetching restaurant recommendations. Please try again later.")
+
+#         return []
