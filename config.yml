@@ -45,3 +45,10 @@ policies:
     max_history: 5
     epochs: 100
     constrain_similarities: true
+
+rest:
+
+# socketio:
+#   user_message_evt: user_uttered
+#   bot_message_evt: bot_uttered
+#   session_persistence: true

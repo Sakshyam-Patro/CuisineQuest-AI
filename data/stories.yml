@@ -45,6 +45,8 @@ stories:
     - active_loop: restaurant_form
     - active_loop: null
     - action: action_submit_form
+    - action: action_reset_booking_form
+
 
 - story: direct book a restaurant
   steps:
@@ -53,6 +55,8 @@ stories:
     - active_loop: restaurant_form
     - active_loop: null
     - action: action_submit_form
+    - action: action_reset_booking_form
+
 
 - story: book after cancellation
   steps:
@@ -67,6 +71,15 @@ stories:
     - action: restaurant_form
     - active_loop: restaurant_form
 
+- story: recommend by cuisine
+  steps:
+  - intent: cuisine
+  - action: action_recommend_by_cuisine
+
+- story: recommend by location
+  steps:
+  - intent: location
+  - action: action_recommend_by_location
 # - story: greet and book a restaurant
 #   steps:
 #     - intent: greet
@@ -253,6 +266,7 @@ stories:
   steps:
     - intent: cancel_reservation
     - action: utter_cancellation_confirmation
+    - action: action_reset_booking_form
 
 # Bot Challenge
 - story: User Challenges the Bot

@@ -12,6 +12,10 @@
 
 action_endpoint:
  url: "http://localhost:5055/webhook"
+#  websocket: true  # Ensure WebSocket is enabled
+
+# rest:
+#   url: "http://localhost:5005/api"
 
 # action_endpoint:
 #   url: "http://0.0.0.0:5055/webhook"
@@ -43,3 +47,7 @@ action_endpoint:
 #  username: username
 #  password: password
 #  queue: queue
+# socketio:
+#   user_message_evt: user_uttered
+#   bot_message_evt: bot_uttered
+#   session_persistence: true

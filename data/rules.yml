@@ -32,6 +32,13 @@ rules:
   - slot_was_set: 
     - requested_slot: null
   - action: action_submit_form
+  - action: action_reset_booking_form
+
+# Provide Restaurant Info:
+- rule: Provide restaurant information
+  steps:
+    - intent: ask_restaurant_info
+    - action: action_tell_restaurant_info
 
 # - rule: Cancel reservation
 #   steps:

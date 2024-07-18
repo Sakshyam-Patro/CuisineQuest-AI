@@ -213,7 +213,26 @@ nlu:
 #     - Best [Japanese](cuisine) in [HSR Layout](location)
 #     - [Greek](cuisine) food in [Electronic City](location)
 
+# - intent: ask_restaurant_info
+#   examples: |
+#     - Tell me about [Sunsadm](restaurant_name)
+#     - What do you know about [Olive Garden](restaurant_name)
+#     - Give me information on [McDonald's](restaurant_name)
+#     - Can you provide details about [Pizza Hut](restaurant_name)
+#     - I want to know more about [Domino's](restaurant_name)
 
+# Restaurant Info
+- intent: ask_restaurant_info
+  examples: |
+    - Tell me about [Sunsadm](restaurant_name)
+    - What do you know about [Olive Garden](restaurant_name)
+    - Give me information on [McDonald's](restaurant_name)
+    - Can you provide details about [Pizza Hut](restaurant_name)
+    - I want to know more about [Domino's](restaurant_name)
+    - Tell me about [Any Restaurant Name]
+    - What do you know about [Any Other Restaurant]
+    - Information about [Some Restaurant]
+  
 # Time
 - intent: ask_time
   examples: |
@@ -223,3 +242,25 @@ nlu:
     - Do you know what time it is?
     - Tell me the time please
     - time now
+
+- intent: cuisine
+  examples: |
+    - I want to eat [Chinese](cuisine) food
+    - Recommend me some [Italian](cuisine) restaurants
+    - What are the best [North Indian](cuisine) places?
+    - Show me top [South Indian](cuisine) restaurants
+    - I'm in the mood for [Thai](cuisine)
+    - Where can I find good [Mexican](cuisine) food?
+    - Any [Japanese](cuisine) restaurants you can suggest?
+    - I'm craving [French](cuisine) cuisine
+
+- intent: location
+  examples: |
+    - What are the best restaurants in [Jayanagar](location)?
+    - Show me top-rated places to eat in [Indiranagar](location)
+    - Recommend restaurants near [MG Road](location)
+    - I'm looking for restaurants in [Koramangala](location)
+    - Where should I eat in [Whitefield](location)?
+    - Any good places in [Malleshwaram](location)?
+    - What are popular restaurants in [JP Nagar](location)?
+    - Suggest some eateries in [HSR Layout](location)

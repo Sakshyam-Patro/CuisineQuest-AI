@@ -6,12 +6,13 @@ intents:
   # - affirm
 #   - deny
 #   - request_recommendation
-  # - cuisine
-  # - location
+  - cuisine
+  - location
   - book_restaurant
   - bot_challenge
   - cancel_reservation
   # - inform
+  - ask_restaurant_info
   - ask_time
   # - cuisine_and_location
 
@@ -78,13 +79,11 @@ slots:
   cuisine:
     type: text
     mappings:
-    - type: from_entity
-      entity: cuisine
+      - type: from_text
   location:
     type: text
     mappings:
-    - type: from_entity
-      entity: location
+      - type: from_text
   # - action_recommend_by_cost
   # - action_recommend_by_cuisine_and_location
 
@@ -112,8 +111,10 @@ actions:
   - validate_restaurant_form
   - action_reset_booking_form
   - action_tell_time
-  # - action_recommend_by_cuisine
-  # - action_recommend_by_location
+  - action_tell_restaurant_info
+  - action_recommend_by_cuisine
+  - action_recommend_by_location
+
 
 responses:
   utter_ask_user_name:

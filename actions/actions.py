@@ -6,511 +6,6 @@
 
 
 # This is a simple example for a custom action which utters "Hello World!"
-# import pymongo 
-# import re
-# from pymongo import MongoClient
-# from typing import Any, Text, Dict, List
-# from rasa_sdk import Action, Tracker
-# from rasa_sdk.executor import CollectingDispatcher
-# from rasa_sdk.forms import FormValidationAction
-# from datetime import datetime, timedelta
-# import parsedatetime as pdt  # Ensure parsedatetime is installed
-
-# # import logging
-
-# # logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', handlers=[
-# #     logging.FileHandler("app.log"),
-# #     logging.StreamHandler()
-# # # ])
-
-# # logger = logging.getLogger(__name__)
-
-# # cal = parsedatetime.Calendar()
-# cal = pdt.Calendar()
-
-# # MongoDB connection
-# client = MongoClient("mongodb://localhost:27017/")
-# db = client["Restaurants"]
-# collection = db["Zomato"]
-# booking_collection = db["Bookings"]
-
-# class RestaurantForm(FormValidationAction):
-#     def name(self) -> Text:
-#         return "restaurant_form"
-
-#     def validate_user_name(
-#         self, value: Text, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
-#     ) -> Dict[Text, Any]:
-#         if value and len(value.strip()) > 0:
-#             return {"user_name": value}
-#         else:
-#             dispatcher.utter_message(text="Please provide a valid name.")
-#             return {"user_name": None}
-
-#     def validate_restaurant_name(
-#         self, value: Text, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
-#     ) -> Dict[Text, Any]:
-#         if value and len(value.strip()) > 0:
-#             # Check if restaurant exists in database
-#             restaurant = collection.find_one({"name": value})
-#             if restaurant:
-#                 return {"restaurant_name": value}
-#             else:
-#                 dispatcher.utter_message(text=f"I'm sorry, I couldn't find a restaurant named '{value}'. Please check the spelling or try another restaurant.")
-#                 return {"restaurant_name": None}
-#         else:
-#             dispatcher.utter_message(text="Please provide a valid restaurant name.")
-#             return {"restaurant_name": None}
-            
-
-#     def validate_phone_number(
-#         self, value: Text, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
-#     ) -> Dict[Text, Any]:
-#         if not value:
-#             dispatcher.utter_message(text="What is your phone number?")
-#             return {"phone_number": None}
-#         phone_pattern = r"^\d{10}$"
-#         if not re.match(phone_pattern, value):
-#             dispatcher.utter_message(text="Please provide a valid 10-digit phone number.")
-#             return {"phone_number": None}
-#         return {"phone_number": value}
-
-#     def validate_email(
-#         self, value: Text, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
-#     ) -> Dict[Text, Any]:
-#         if not value:
-#             dispatcher.utter_message(text="What is your email?")
-#             return {"email": None}
-#         email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-#         if not re.match(email_pattern, value):
-#             dispatcher.utter_message(text="This email is invalid. Please provide a valid email address.")
-#             return {"email": None}
-#         return {"email": value}
-
-#     def validate_date(
-#         self, value: Text, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
-#     ) -> Dict[Text, Any]:
-#         if not value:
-#             dispatcher.utter_message(text="What date would you like to book? (e.g., 29 June, tomorrow, next Friday)")
-#             return {"date": None}
-#         try:
-#             parsed_date = datetime.strptime(value, "%Y-%m-%d")
-#             booking_date = parsed_date.date()
-#             today = datetime.now().date()
-#             if booking_date < today:
-#                 dispatcher.utter_message(text="Sorry, you can't book for a date in the past. Please provide a future date.")
-#                 return {"date": None}
-#             if booking_date > today + timedelta(days=30):
-#                 dispatcher.utter_message(text="Sorry, you can only book up to 30 days in advance. Please choose a closer date.")
-#                 return {"date": None}
-#             formatted_date = booking_date.strftime("%Y-%m-%d")
-#             return {"date": formatted_date}
-#         except ValueError:
-#             dispatcher.utter_message(text="I couldn't understand that date. Please try again with a clearer date format.")
-#             return {"date": None}
-
-#     def validate_time(
-#         self, value: Text, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
-#     ) -> Dict[Text, Any]:
-#         if not value:
-#             dispatcher.utter_message(text="What time would you like to book? (e.g., 7pm, 10:30 pm, 14:00)")
-#             return {"time": None}
-#         try:
-#             parsed_time = datetime.strptime(value, "%H:%M")
-#             booking_time = parsed_time.time()
-#             opening_time = datetime.strptime("11:00", "%H:%M").time()
-#             closing_time = datetime.strptime("22:00", "%H:%M").time()
-#             if booking_time < opening_time or booking_time > closing_time:
-#                 dispatcher.utter_message(text="Sorry, bookings are only available between 11:00 AM and 10:00 PM. Please choose a time within this range.")
-#                 return {"time": None}
-#             formatted_time = booking_time.strftime("%H:%M")
-#             return {"time": formatted_time}
-#         except ValueError:
-#             dispatcher.utter_message(text="I couldn't understand that time. Please try again with a clearer time format.")
-#             return {"time": None}
-
-# class ActionSubmitForm(Action):
-#     def name(self) -> Text:
-#         return "action_submit_form"
-
-#     def run(
-#         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
-#     ) -> List[Dict[Text, Any]]:
-#         user_name = tracker.get_slot("user_name")
-#         restaurant_name = tracker.get_slot("restaurant_name")
-#         phone_number = tracker.get_slot("phone_number")
-#         email = tracker.get_slot("email")
-#         date = tracker.get_slot("date")
-#         time = tracker.get_slot("time")
-        
-#         # Here you could add logic to actually create the booking in your database
-#         booking = {
-#             "user_name": user_name,
-#             "restaurant_name": restaurant_name,
-#             "phone_number": phone_number,
-#             "email": email,
-#             "date": date,
-#             "time": time
-#         }
-#         booking_collection.insert_one(booking)
-        
-#         dispatcher.utter_message(
-#             text=f"Thank you {user_name}, your booking at {restaurant_name} on {date} at {time} has been confirmed."
-#         )
-#         return []
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Restaurant form
-# class RestaurantForm(FormValidationAction):
-#     def name(self) -> Text:
-#         return "restaurant_form"
-
-#     @staticmethod
-#     def required_slots(tracker: Tracker) -> List[Text]:
-#         return ["user_name", "restaurant_name", "phone_number", "email", "date", "time"]
-
-#     def validate_user_name(
-#         self, value: Text, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
-#     ) -> Dict[Text, Any]:
-#         if not value:
-#             dispatcher.utter_message(text="Please provide your name.")
-#             return {"user_name": None}
-#         return {"user_name": value}
-
-#     def validate_restaurant_name(
-#         self, value: Text, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
-#     ) -> Dict[Text, Any]:
-#         if not value:
-#             dispatcher.utter_message(text="Which restaurant are you interested in booking?")
-#             return {"restaurant_name": None}
-
-#         restaurant = collection.find_one({"name": {"$regex": f"^{re.escape(value)}$", "$options": "i"}})
-#         if not restaurant:
-#             dispatcher.utter_message(text=f"I'm sorry, I couldn't find a restaurant named '{value}'. Could you please check the spelling or provide another restaurant name?")
-#             return {"restaurant_name": None}
-        
-#         return {"restaurant_name": restaurant["name"]}
-
-#     def validate_phone_number(
-#         self, value: Text, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
-#     ) -> Dict[Text, Any]:
-#         if not value:
-#             dispatcher.utter_message(Text="What is your phone number?")
-#             return {"phone_number": None}
-
-#         phone_pattern = r"^\d{10}$"  # Define a regular expression pattern for a 10-digit phone number
-#         if not re.match(phone_pattern, value):
-#             dispatcher.utter_message(template="utter_invalid_phone_number")
-#             return {"phone_number": None}
-        
-#         return {"phone_number": value}
-
-#     def validate_email(
-#         self, value: Text, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
-#     ) -> Dict[Text, Any]:
-#         if not value:
-#             dispatcher.utter_message(text="What is your email?")
-#             return {"email": None}
-
-#         email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"  # Define an email validation pattern
-#         if not re.match(email_pattern, value):
-#             dispatcher.utter_message(text="This email is invalid.")
-#             return {"email": None}
-
-#         return {"email": value}
-
-#     def validate_date(
-#         self, value: Text, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
-#     ) -> Dict[Text, Any]:
-#         if not value:
-#             dispatcher.utter_message(template="what date would you like to book?")
-#             return {"date": None}
-        
-#         return {"date": value}
-
-#     def validate_time(
-#         self, value: Text, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
-#     ) -> Dict[Text, Any]:
-#         if not value:
-#             dispatcher.utter_message(template="What time would you like to book?")
-#             return {"time": None}
-
-#         return {"time": value}
-        
-    # async def submit(
-    #     self,
-    #     dispatcher: CollectingDispatcher,
-    #     tracker: Tracker,
-    #     domain: Dict[Text, Any],
-    # ) -> List[Dict[Text, Any]]:
-    #     # Retrieve the filled slot values
-    #     user_name = tracker.get_slot("user_name")
-    #     restaurant_name = tracker.get_slot("restaurant_name")
-    #     phone_number = tracker.get_slot("phone_number")
-    #     email = tracker.get_slot("email")
-    #     date = tracker.get_slot("date")
-    #     time = tracker.get_slot("time")
-
-    #     # Perform any additional actions with the collected slot values here
-    #     # For example, you can save them to a database or perform an API call
-
-    #     # Confirm booking to the user
-    #     dispatcher.utter_message(
-    #         template="utter_confirm_booking",
-    #         user_name=user_name,
-    #         restaurant_name=restaurant_name,
-    #         phone_number=phone_number,
-    #         email=email,
-    #         date=date,
-    #         time=time,
-    #     )
-
-    #     return []
-
-# class ActionSubmitForm(Action):
-#     def name(self) -> Text:
-#         return "action_submit_form"
-
-#     def run(
-#         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
-#     ) -> List[Dict[Text, Any]]:
-#         user_name = tracker.get_slot("user_name")
-#         restaurant_name = tracker.get_slot("restaurant_name")
-#         phone_number = tracker.get_slot("phone_number")
-#         email = tracker.get_slot("email")
-#         date = tracker.get_slot("date")
-#         time = tracker.get_slot("time")
-
-#         # Here you might want to add logic to save the booking to your database
-
-#         dispatcher.utter_message(
-#             template="utter_confirm_booking",
-#             user_name=user_name,
-#             restaurant_name=restaurant_name,
-#             phone_number=phone_number,
-#             email=email,
-#             date=date,
-#             time=time,
-#         )
-
-#         return []
-
-
-# class RestaurantForm(FormValidationAction):
-#     def name(self) -> Text:
-#         return "restaurant_form"
-
-    # @staticmethod
-    # def required_slots(self) -> List[Text]:
-    #     return ["user_name", "restaurant_name", "phone_number", "email", "date", "time"]
-# Async version corrected with the required parameters
-    # async def required_slots(
-    #         self, 
-    #         _slots_mapped_in_domain: List[Text], 
-    #         _dispatcher: "CollectingDispatcher", 
-    #         _tracker: "Tracker", 
-    #         _domain: Dict,  # Assuming usage of a generic dict type hint as previously discussed
-    #     ) -> List[Text]:
-    #         return ["user_name", "restaurant_name", "phone_number", "email", "date", "time"]
-#     async def required_slots(
-#                 self,
-#                 slots_mapped_in_domain: List[Text],
-#                 dispatcher: CollectingDispatcher,
-#                 tracker: Tracker,
-#                 domain: Dict
-#         ) -> List[Text]:
-#             return ["user_name", "restaurant_name", "phone_number", "email", "date", "time"]
-
-
-#     def validate_user_name(
-#         self, value: Text, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
-#     ) -> Dict[Text, Any]:
-#         if not value:
-#             dispatcher.utter_message(text="Please provide your name.")
-#             return {"user_name": None}
-#         return {"user_name": value}
-
-#     def validate_restaurant_name(
-#         self, value: Text, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
-#     ) -> Dict[Text, Any]:
-#         if not value:
-#             dispatcher.utter_message(text="Which restaurant are you interested in booking?")
-#             return {"restaurant_name": None}
-
-#         restaurant = collection.find_one({"name": {"$regex": f"^{re.escape(value)}$", "$options": "i"}})
-#         if not restaurant:
-#             dispatcher.utter_message(text=f"I'm sorry, I couldn't find a restaurant named '{value}'. Could you please check the spelling or provide another restaurant name?")
-#             return {"restaurant_name": None}
-        
-#         return {"restaurant_name": restaurant["name"]}
-
-#     def validate_phone_number(
-#         self, value: Text, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
-#     ) -> Dict[Text, Any]:
-#         if not value:
-#             dispatcher.utter_message(text="What is your phone number?")
-#             return {"phone_number": None}
-
-#         phone_pattern = r"^\d{10}$"
-#         if not re.match(phone_pattern, value):
-#             dispatcher.utter_message(text="Please provide a valid 10-digit phone number.")
-#             return {"phone_number": None}
-        
-#         return {"phone_number": value}
-
-#     def validate_email(
-#         self, value: Text, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
-#     ) -> Dict[Text, Any]:
-#         if not value:
-#             dispatcher.utter_message(text="What is your email?")
-#             return {"email": None}
-
-#         email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-#         if not re.match(email_pattern, value):
-#             dispatcher.utter_message(text="This email is invalid. Please provide a valid email address.")
-#             return {"email": None}
-
-#         return {"email": value}
-
-#     def validate_date(
-#         self, value: Text, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
-#     ) -> Dict[Text, Any]:
-#         if not value:
-#             dispatcher.utter_message(text="What date would you like to book? (e.g., 29 June, tomorrow, next Friday)")
-#             return {"date": None}
-        
-#         try:
-#             # Parse the date string
-#             parsed_date, _ = cal.parseDT(value, datetime.now())
-#             booking_date = parsed_date.date()
-            
-#             today = datetime.now().date()
-#             if booking_date < today:
-#                 dispatcher.utter_message(text="Sorry, you can't book for a date in the past. Please provide a future date.")
-#                 return {"date": None}
-#             if booking_date > today + timedelta(days=30):
-#                 dispatcher.utter_message(text="Sorry, you can only book up to 30 days in advance. Please choose a closer date.")
-#                 return {"date": None}
-            
-#             # Format the date as a string for storage
-#             formatted_date = booking_date.strftime("%Y-%m-%d")
-#             return {"date": formatted_date}
-#         except ValueError:
-#             dispatcher.utter_message(text="I couldn't understand that date. Please try again with a clearer date format.")
-#             return {"date": None}
-
-#     def validate_time(
-#         self, value: Text, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
-#     ) -> Dict[Text, Any]:
-#         if not value:
-#             dispatcher.utter_message(text="What time would you like to book? (e.g., 7pm, 10:30 pm, 14:00)")
-#             return {"time": None}
-
-#         try:
-#             # Parse the time string
-#             parsed_time, _ = cal.parseDT(value, datetime.now())
-#             booking_time = parsed_time.time()
-            
-#             opening_time = datetime.strptime("11:00", "%H:%M").time()
-#             closing_time = datetime.strptime("22:00", "%H:%M").time()
-            
-#             if booking_time < opening_time or booking_time > closing_time:
-#                 dispatcher.utter_message(text="Sorry, bookings are only available between 11:00 AM and 10:00 PM. Please choose a time within this range.")
-#                 return {"time": None}
-            
-#             # Format the time as a string for storage
-#             formatted_time = booking_time.strftime("%H:%M")
-#             return {"time": formatted_time}
-#         except ValueError:
-#             dispatcher.utter_message(text="I couldn't understand that time. Please try again with a clearer time format.")
-#             return {"time": None}
-
-# # class ActionSubmitForm(Action):
-# #     def name(self) -> Text:
-# #         return "action_submit_form"
-
-# #     def run(
-# #         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
-# #     ) -> List[Dict[Text, Any]]:
-        
-# #         # Retrieve slots from tracker
-# #         user_name = tracker.get_slot("user_name")
-# #         restaurant_name = tracker.get_slot("restaurant_name")
-# #         phone_number = tracker.get_slot("phone_number")
-# #         email = tracker.get_slot("email")
-# #         date = tracker.get_slot("date")
-# #         time = tracker.get_slot("time")
-
-# #         # Save booking to MongoDB
-# #         booking_data = {
-# #             "user_name": user_name,
-# #             "restaurant_name": restaurant_name,
-# #             "phone_number": phone_number,
-# #             "email": email,
-# #             "date": date,
-# #             "time": time,
-# #             "booking_timestamp": datetime.now()
-# #         }
-
-# #         try:
-# #             booking_collection.insert_one(booking_data)
-# #             dispatcher.utter_message(
-# #                 text="Thank you! Your booking has been confirmed.",
-# #                 user_name=user_name,
-# #                 restaurant_name=restaurant_name,
-# #                 phone_number=phone_number,
-# #                 email=email,
-# #                 date=date,
-# #                 time=time,
-# #             )
-# #         except Exception as e:
-# #             dispatcher.utter_message(text="I'm sorry, there was an error saving your booking. Please try again later.")
-# #             print(f"Error saving booking: {str(e)}")
-
-# #         return []
-
-# class ActionSubmitForm(Action):
-#     def name(self) -> Text:
-#         return "action_submit_form"
-
-#     def run(
-#         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
-#     ) -> List[Dict[Text, Any]]:
-#         # Check if all required slots are filled
-#         if all(tracker.get_slot(slot) for slot in ["user_name", "restaurant_name", "phone_number", "email", "date", "time"]):
-#             # Retrieve slots from tracker
-#             user_name = tracker.get_slot("user_name")
-#             restaurant_name = tracker.get_slot("restaurant_name")
-#             phone_number = tracker.get_slot("phone_number")
-#             email = tracker.get_slot("email")
-#             date = tracker.get_slot("date")
-#             time = tracker.get_slot("time")
-
-#             # Example logic to save booking or any other action
-#             dispatcher.utter_message(
-#                 text=f"Thank you {user_name}, your booking at {restaurant_name} on {date} at {time} has been confirmed."
-#             )
-#         else:
-#             # Prompt user to fill remaining required slots
-#             dispatcher.utter_message(template="utter_ask_" + next(self.required_slots()))
-
-#         return []
 
 import logging
 from datetime import datetime, timedelta
@@ -520,6 +15,9 @@ from rasa_sdk import Tracker
 from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.forms import FormValidationAction
 from rasa_sdk.events import AllSlotsReset, Restarted
+from fuzzywuzzy import process
+from bson.son import SON
+
 
 from rasa_sdk.types import DomainDict
 from rasa_sdk import Action
@@ -548,139 +46,6 @@ cal = pdt.Calendar()
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-# class ValidateRestaurantForm(FormValidationAction):
-#     def name(self) -> Text:
-#         return "validate_restaurant_form"
-
-    # async def required_slots(
-    #     self,
-    #     slots_mapped_in_domain: List[Text],
-    #     dispatcher: CollectingDispatcher,
-    #     tracker: Tracker,
-    #     domain: Dict[Text, Any],
-    # ) -> List[Text]:
-    #     unfilled_slots = []
-
-    #     for slot_name in slots_mapped_in_domain:
-    #         if tracker.slots.get(slot_name) is None:
-    #             dispatcher.utter_message(template=f"utter_ask_{slot_name}")
-    #             unfilled_slots.append(slot_name)
-
-    #     return unfilled_slots
-
-    # def validate_user_name(
-    #     self,
-    #     slot_value: Any,
-    #     dispatcher: CollectingDispatcher,
-    #     tracker: Tracker,
-    #     domain: DomainDict,
-    # ) -> Dict[Text, Any]:
-    #     logger.debug(f"Validating user_name slot with value: {slot_value}")
-    #     if slot_value is None:
-    #         dispatcher.utter_message(text="Please provide a valid name.")
-    #         return {"user_name": None}
-    #     dispatcher.utter_message(text=f"Sure, {slot_value}")
-    #     return {"user_name": slot_value}
-
-        # if isinstance(slot_value, str) and slot_value.strip():
-        #     return {"user_name": slot_value}  # Valid name provided
-        # else:
-        #     if not slot_value:
-        #         logger.debug("Slot value is empty or None.")
-        #         dispatcher.utter_message(text="Please provide a valid name.")
-        #     return {"user_name": None}  # Return None to indicate slot is not filled yet
-
-    # def validate_restaurant_name(
-    #     self,
-    #     slot_value: Any,
-    #     dispatcher: CollectingDispatcher,
-    #     tracker: Tracker,
-    #     domain: DomainDict,
-    # ) -> Dict[Text, Any]:
-    #     logger.debug(f"Validating restaurant_name slot with value: {slot_value}")
-    #     if collection.find_one({"name": slot_value}):
-    #         return {"restaurant_name": slot_value}
-    #     else:
-    #         logger.debug("Restaurant name not found in database.")
-    #         dispatcher.utter_message(text="Sorry, I couldn't find that restaurant. Please try again.")
-    #         return {"restaurant_name": None}
-
-    # def validate_date(
-    #     self,
-    #     slot_value: Any,
-    #     dispatcher: CollectingDispatcher,
-    #     tracker: Tracker,
-    #     domain: DomainDict,
-    # ) -> Dict[Text, Any]:
-    #     logger.debug(f"Validating date slot with value: {slot_value}")
-    #     try:
-    #         booking_date = datetime.strptime(slot_value, "%Y-%m-%d").date()
-    #         today = datetime.now().date()
-    #         if not (today <= booking_date <= today + timedelta(days=30)):
-    #             logger.debug("Invalid date provided.")
-    #             dispatcher.utter_message(text="Please provide a date within the next 30 days.")
-    #             return {"date": None}
-    #         return {"date": slot_value}
-    #     except ValueError:
-    #         logger.debug("Invalid date format provided.")
-    #         dispatcher.utter_message(text="Please provide a valid date in the format YYYY-MM-DD.")
-    #         return {"date": None}
-
-    # def validate_time(
-    #     self,
-    #     slot_value: Any,
-    #     dispatcher: CollectingDispatcher,
-    #     tracker: Tracker,
-    #     domain: DomainDict,
-    # ) -> Dict[Text, Any]:
-    #     logger.debug(f"Validating time slot with value: {slot_value}")
-    #     try:
-    #         time_formats = ["%I:%M %p", "%I %p", "%I:%M%p", "%I%p"]
-    #         parsed_time = next((datetime.strptime(slot_value.upper(), fmt).time() for fmt in time_formats if self._try_parse_time(slot_value.upper(), fmt)), None)
-    #         if not parsed_time:
-    #             logger.debug("Invalid time format provided.")
-    #             raise ValueError
-            
-    #         if not (datetime.strptime("10:00 AM", "%I:%M %p").time() <= parsed_time <= datetime.strptime("10:00 PM", "%I:%M %p").time()):
-    #             logger.debug("Time outside valid range provided.")
-    #             dispatcher.utter_message(text="Please provide a time between 10:00 AM and 10:00 PM.")
-    #             return {"time": None}
-            
-    #         return {"time": parsed_time.strftime("%I:%M %p")}  # Store in 12-hour format
-    #     except ValueError:
-    #         logger.debug("Invalid time format provided.")
-    #         dispatcher.utter_message(text="Please provide a valid time (e.g., 7 pm, 9:30 pm).")
-    #         return {"time": None}
-
-    # def validate_email(
-    #     self,
-    #     slot_value: Any,
-    #     dispatcher: CollectingDispatcher,
-    #     tracker: Tracker,
-    #     domain: DomainDict,
-    # ) -> Dict[Text, Any]:
-    #     logger.debug(f"Validating email slot with value: {slot_value}")
-    #     if "@" in slot_value:
-    #         return {"email": slot_value}
-    #     else:
-    #         logger.debug("Invalid email format provided.")
-    #         dispatcher.utter_message(text="Please provide a valid email address.")
-    #         return {"email": None}
-
-    # def validate_phone_number(
-    #     self,
-    #     slot_value: Any,
-    #     dispatcher: CollectingDispatcher,
-    #     tracker: Tracker,
-    #     domain: DomainDict,
-    # ) -> Dict[Text, Any]:
-    #     logger.debug(f"Validating phone_number slot with value: {slot_value}")
-    #     if slot_value.isdigit() and len(slot_value) == 10:
-    #         return {"phone_number": slot_value}
-    #     else:
-    #         logger.debug("Invalid phone number format provided.")
-    #         dispatcher.utter_message(text="Please provide a valid 10-digit phone number.")
-    #         return {"phone_number": None}
 class ValidateRestaurantForm(FormValidationAction):
     def name(self) -> Text:
         return "validate_restaurant_form"
@@ -716,25 +81,7 @@ class ValidateRestaurantForm(FormValidationAction):
         except Exception as e:
             dispatcher.utter_message(text="Sorry, I couldn't verify the restaurant name. Please try again.")
             return {"restaurant_name": None}
-        
-    # def validate_date(
-    #     self,
-    #     slot_value: Any,
-    #     dispatcher: CollectingDispatcher,
-    #     tracker: Tracker,
-    #     domain: DomainDict,
-    # ) -> Dict[Text, Any]:
-    #     try:
-    #         # Try to parse the date
-    #         date = datetime.strptime(slot_value, "%d %B").date()
-    #         # Check if the date is in the future
-    #         today = datetime.now().date()
-    #         if date < today:
-    #             date = date.replace(year=today.year + 1)
-    #         return {"date": date.strftime("%d %B %Y")}
-    #     except ValueError:
-    #         dispatcher.utter_message(text="That's not a valid date. Please enter a date in the format 'DD Month' (e.g., '25 December').")
-    #         return {"date": None}
+
     def validate_date(
         self,
         slot_value: Any,
@@ -822,8 +169,64 @@ class ActionSubmitForm(Action):
                                  email=email,
                                  phone_number=phone_number)
 
-        return []
+        return [AllSlotsReset()]
 
+# Provide Restaurant Info
+class ActionTellRestaurantInfo(Action):
+    def name(self) -> Text:
+        return "action_tell_restaurant_info"
+
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        
+        # Get the entire user message
+        user_message = tracker.latest_message.get('text')
+        
+        # Remove common phrases to isolate the restaurant name
+        prefixes_to_remove = ['tell me about', 'what do you know about', 'give me information on', 'can you provide details about']
+        for prefix in prefixes_to_remove:
+            if user_message.lower().startswith(prefix):
+                restaurant_name = user_message[len(prefix):].strip()
+                break
+        else:
+            restaurant_name = user_message
+
+        logger.debug(f"Searching for restaurant: {restaurant_name}")
+        
+        # Get all restaurant names from the database
+        all_restaurants = list(collection.find({}, {"name": 1}))
+        restaurant_names = [r['name'] for r in all_restaurants]
+
+        # Use fuzzy matching to find the closest match
+        best_match, score = process.extractOne(restaurant_name, restaurant_names)
+
+        logger.debug(f"Best match: {best_match}, score: {score}")
+
+        if score > 80:  # You can adjust this threshold
+            restaurant = collection.find_one({"name": best_match})
+            
+            if restaurant:
+                info = f"Here's what I know about {restaurant['name']}:\n"
+                info += f"Address: {restaurant['address']}\n"
+                info += f"Cuisine: {restaurant['cuisines']}\n"
+                info += f"Cost for two: ₹{restaurant['approx_cost(for two people)']}\n"
+                info += f"Online ordering: {restaurant['online_order']}\n"
+                info += f"Table booking: {restaurant['book_table']}\n"
+                info += f"Type: {restaurant['rest_type']}\n"
+                info += f"Location: {restaurant['location']}\n"
+                
+                if restaurant['phone']:
+                    info += f"Phone: {restaurant['phone']}\n"
+                
+                dispatcher.utter_message(text=info)
+            else:
+                dispatcher.utter_message(text=f"I'm sorry, I couldn't find any information about {best_match}.")
+        else:
+            dispatcher.utter_message(text=f"I'm sorry, I couldn't find a restaurant matching '{restaurant_name}'. Could you please check the spelling and try again?")
+        
+        return []
+    
 # Tell the time
 class ActionTellTime(Action):
     def name(self) -> Text:
@@ -839,15 +242,83 @@ class ActionTellTime(Action):
         dispatcher.utter_message(text=message)
         
         return []
-    class ActionResetBookingForm(Action):
-        def name(self) -> Text:
-            return "action_reset_booking_form"
+class ActionResetBookingForm(Action):
+    def name(self) -> Text:
+        return "action_reset_booking_form"
 
-        def run(self, dispatcher: CollectingDispatcher,
-                tracker: Tracker,
-                domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-            return [AllSlotsReset(), Restarted()]
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        return [AllSlotsReset(), Restarted()]
         
+# Recommend by Cuisine
+class ActionRecommendByCuisine(Action):
+    def name(self) -> Text:
+        return "action_recommend_by_cuisine"
+
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        cuisine = tracker.get_slot("cuisine")
+        if not cuisine:
+            dispatcher.utter_message(text="I'm sorry, I couldn't understand which cuisine you're looking for. Could you please specify the cuisine?")
+            return []
+
+        pipeline = [
+            {"$match": {"cuisines": {"$regex": cuisine, "$options": "i"}}},
+            {"$sort": SON([("rating", -1)])},
+            {"$limit": 5}
+        ]
+
+        top_restaurants = list(collection.aggregate(pipeline))
+
+        if not top_restaurants:
+            dispatcher.utter_message(text=f"I'm sorry, I couldn't find any restaurants serving {cuisine} cuisine.")
+            return []
+
+        response = f"Here are the top 5 restaurants serving {cuisine} cuisine:\n\n"
+        for restaurant in top_restaurants:
+            response += f"- {restaurant['name']} (Rating: {restaurant['rating']})\n"
+            response += f"  Address: {restaurant['address']}\n"
+            response += f"  Cost for two: ₹{restaurant['approx_cost(for two people)']}\n\n"
+
+        dispatcher.utter_message(text=response)
+        return []
+
+# Recommend by Location
+class ActionRecommendByLocation(Action):
+    def name(self) -> Text:
+        return "action_recommend_by_location"
+
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        location = tracker.get_slot("location")
+        if not location:
+            dispatcher.utter_message(text="I'm sorry, I couldn't understand which location you're looking for. Could you please specify the location?")
+            return []
+
+        pipeline = [
+            {"$match": {"location": {"$regex": location, "$options": "i"}}},
+            {"$sort": SON([("rating", -1)])},
+            {"$limit": 5}
+        ]
+
+        top_restaurants = list(collection.aggregate(pipeline))
+
+        if not top_restaurants:
+            dispatcher.utter_message(text=f"I'm sorry, I couldn't find any restaurants in {location}.")
+            return []
+
+        response = f"Here are the top 5 restaurants in {location}:\n\n"
+        for restaurant in top_restaurants:
+            response += f"- {restaurant['name']} (Rating: {restaurant['rating']})\n"
+            response += f"  Cuisine: {restaurant['cuisines']}\n"
+            response += f"  Address: {restaurant['address']}\n"
+            response += f"  Cost for two: ₹{restaurant['approx_cost(for two people)']}\n\n"
+
+        dispatcher.utter_message(text=response)
+        return []
 # class ActionSubmitForm(Action):
 #     def name(self) -> Text:
 #         return "action_submit_form"
