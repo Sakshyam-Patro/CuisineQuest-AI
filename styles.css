@@ -6,7 +6,7 @@ body {
 
 #chat-widget-button {
     position: fixed;
-    bottom: 60px;
+    bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
     background-color: #3498db;
@@ -22,7 +22,7 @@ body {
 
 #chat-container {
     position: fixed;
-    bottom: 130px;
+    bottom: 110px;
     left: 50%;
     transform: translateX(-50%);
     width: 300px;
@@ -108,10 +108,21 @@ body {
     color: white;
     border: none;
     border-radius: 20px;
-    padding: 8px 16px;
+    padding: 8px 12px;
     margin-left: 10px;
     cursor: pointer;
     flex-shrink: 0; 
+}
+
+#clear-button {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 12px;
+    margin-left: 10px;
+    cursor: pointer;
+    flex-shrink: 0;
 }
 
 .loading {

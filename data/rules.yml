@@ -40,6 +40,11 @@ rules:
     - intent: ask_restaurant_info
     - action: action_tell_restaurant_info
 
+- rule: Tamil vs Sanskrit
+  steps:
+    - intent: tamil_sanskrit
+    - action: utter_tamil_sanskrit
+
 # - rule: Cancel reservation
 #   steps:
 #     - intent: cancel_reservation

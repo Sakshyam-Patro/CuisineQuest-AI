@@ -20,10 +20,22 @@ function addMessage(message, isUser) {
     chatMessages.appendChild(messageElement);
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
+const clearButton = document.getElementById('clear-button');
+
+// Add this function to clear the chat messages
+function clearChat() {
+    chatMessages.innerHTML = '';
+}
+
+// Add this event listener for the clear button
+clearButton.addEventListener('click', clearChat);
 
 async function sendMessage() {
     const message = messageInput.value.trim();
-    if (message) {
+    if (message.toLowerCase() === 'clear') {
+        clearChat();
+        messageInput.value = '';
+    } else {
         addMessage(message, true);
         messageInput.value = '';
 

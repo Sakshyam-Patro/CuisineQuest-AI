@@ -264,3 +264,12 @@ nlu:
     - Any good places in [Malleshwaram](location)?
     - What are popular restaurants in [JP Nagar](location)?
     - Suggest some eateries in [HSR Layout](location)
+
+- intent: tamil_sanskrit
+  examples: |
+    - What is older? Tamil or Sanskrit?
+    - Sanskrit or Tamil
+    - Tamil vs Sanskrit
+    - tamil or sanskrit older
+    - sanskrit vs tamil
+    - which is the oldest language
