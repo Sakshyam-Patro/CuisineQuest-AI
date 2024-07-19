@@ -319,6 +319,28 @@ class ActionRecommendByLocation(Action):
 
         dispatcher.utter_message(text=response)
         return []
+    
+# Random Restaurant
+class ActionSurpriseRestaurant(Action):
+    def name(self) -> Text:
+        return "action_surprise_restaurant"
+
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        
+        random_restaurant = collection.aggregate([{ "$sample": { "size": 1 } }]).next()
+
+        response = "Here's a random restaurant suggestion for you:\n\n"
+        response += f"- {random_restaurant['name']} (Rating: {random_restaurant['rate']})\n"
+        response += f"  Cuisine: {random_restaurant['cuisines']}\n"
+        response += f"  Location: {random_restaurant['location']}\n"
+        response += f"  Address: {random_restaurant['address']}\n"
+        response += f"  Cost for two: ₹{random_restaurant['approx_cost(for two people)']}\n"
+
+        dispatcher.utter_message(text=response)
+        return []
+
 # class ActionSubmitForm(Action):
 #     def name(self) -> Text:
 #         return "action_submit_form"

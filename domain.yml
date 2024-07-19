@@ -13,6 +13,7 @@ intents:
   - cancel_reservation
   # - inform
   - ask_restaurant_info
+  - random
   - ask_time
   - tamil_sanskrit
   # - cuisine_and_location
@@ -115,6 +116,7 @@ actions:
   - action_tell_restaurant_info
   - action_recommend_by_cuisine
   - action_recommend_by_location
+  - action_surprise_restaurant
 
 
 responses:

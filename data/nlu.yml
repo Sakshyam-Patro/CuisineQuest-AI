@@ -265,6 +265,17 @@ nlu:
     - What are popular restaurants in [JP Nagar](location)?
     - Suggest some eateries in [HSR Layout](location)
 
+- intent: random
+  examples: |
+    - surprise me
+    - give me something random
+    - surprise me with a random restaurant
+    - give something random
+    - generate a random restaurant
+    - I don't know what to choose. Help me
+    - I am not sure what to choose
+    - give me something
+
 - intent: tamil_sanskrit
   examples: |
     - What is older? Tamil or Sanskrit?

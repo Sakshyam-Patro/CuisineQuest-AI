@@ -40,6 +40,13 @@ rules:
     - intent: ask_restaurant_info
     - action: action_tell_restaurant_info
 
+# random
+- rule: random
+  steps:
+    - intent: random
+    - action: action_surprise_restaurant
+    
+# Tamil vs Sanskrit
 - rule: Tamil vs Sanskrit
   steps:
     - intent: tamil_sanskrit
