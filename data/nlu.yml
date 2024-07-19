@@ -245,25 +245,27 @@ nlu:
 
 - intent: cuisine
   examples: |
-    - I want to eat [Chinese](cuisine) food
-    - Recommend me some [Italian](cuisine) restaurants
-    - What are the best [North Indian](cuisine) places?
-    - Show me top [South Indian](cuisine) restaurants
-    - I'm in the mood for [Thai](cuisine)
-    - Where can I find good [Mexican](cuisine) food?
-    - Any [Japanese](cuisine) restaurants you can suggest?
-    - I'm craving [French](cuisine) cuisine
+    - I want to eat [cuisine]
+    - Show me [cuisine] restaurants
+    - What are some good [cuisine] places?
+    - Can you recommend [cuisine] food?
+    - I'm in the mood for [cuisine]
+    - tell me something good in [cuisine]
+    - [cuisine]
+    - top places in [cuisine]
+    - best rated in [cuisine]
 
 - intent: location
   examples: |
-    - What are the best restaurants in [Jayanagar](location)?
-    - Show me top-rated places to eat in [Indiranagar](location)
-    - Recommend restaurants near [MG Road](location)
-    - I'm looking for restaurants in [Koramangala](location)
-    - Where should I eat in [Whitefield](location)?
-    - Any good places in [Malleshwaram](location)?
-    - What are popular restaurants in [JP Nagar](location)?
-    - Suggest some eateries in [HSR Layout](location)
+    - Show me restaurants in [location]
+    - What are some good places to eat in [location]?
+    - I'm looking for restaurants near [location]
+    - Can you recommend places in [location]?
+    - Where can I eat in [location]?
+    - recommend something in [location]
+    - [location]
+    - top places in [location]
+    - best rated in [location]
 
 - intent: random
   examples: |

@@ -45,12 +45,24 @@ rules:
   steps:
     - intent: random
     - action: action_surprise_restaurant
-    
+
 # Tamil vs Sanskrit
 - rule: Tamil vs Sanskrit
   steps:
     - intent: tamil_sanskrit
     - action: utter_tamil_sanskrit
+
+# Cuisine
+- rule: recommend by cuisine
+  steps:
+  - intent: cuisine
+  - action: action_recommend_by_cuisine
+
+# Location
+- rule: recommend by location
+  steps:
+  - intent: location
+  - action: action_recommend_by_location
 
 # - rule: Cancel reservation
 #   steps:

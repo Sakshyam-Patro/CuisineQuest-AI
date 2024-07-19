@@ -14,10 +14,10 @@ from pymongo import MongoClient
 from rasa_sdk import Tracker
 from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.forms import FormValidationAction
-from rasa_sdk.events import AllSlotsReset, Restarted
+from rasa_sdk.events import AllSlotsReset, Restarted, SlotSet
 from fuzzywuzzy import process
 from bson.son import SON
-
+from collections import OrderedDict
 
 from rasa_sdk.types import DomainDict
 from rasa_sdk import Action
@@ -251,41 +251,23 @@ class ActionResetBookingForm(Action):
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         return [AllSlotsReset(), Restarted()]
         
-# Recommend by Cuisine
-class ActionRecommendByCuisine(Action):
-    def name(self) -> Text:
-        return "action_recommend_by_cuisine"
-
-    def run(self, dispatcher: CollectingDispatcher,
-            tracker: Tracker,
-            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        cuisine = tracker.get_slot("cuisine")
-        if not cuisine:
-            dispatcher.utter_message(text="I'm sorry, I couldn't understand which cuisine you're looking for. Could you please specify the cuisine?")
-            return []
-
-        pipeline = [
-            {"$match": {"cuisines": {"$regex": cuisine, "$options": "i"}}},
-            {"$sort": SON([("rating", -1)])},
-            {"$limit": 5}
-        ]
-
-        top_restaurants = list(collection.aggregate(pipeline))
-
-        if not top_restaurants:
-            dispatcher.utter_message(text=f"I'm sorry, I couldn't find any restaurants serving {cuisine} cuisine.")
-            return []
-
-        response = f"Here are the top 5 restaurants serving {cuisine} cuisine:\n\n"
-        for restaurant in top_restaurants:
-            response += f"- {restaurant['name']} (Rating: {restaurant['rating']})\n"
-            response += f"  Address: {restaurant['address']}\n"
-            response += f"  Cost for two: ₹{restaurant['approx_cost(for two people)']}\n\n"
-
-        dispatcher.utter_message(text=response)
-        return []
 
 # Recommend by Location
+from collections import OrderedDict
+
+def restaurant_sort_key(restaurant):
+    rate = restaurant.get('rate', 'NEW')
+    votes = restaurant.get('votes', 0)
+    
+    if rate != 'NEW' and rate != 'Not rated':
+        try:
+            numeric_rate = float(rate.split('/')[0])
+            return (-numeric_rate, -votes)
+        except ValueError:
+            pass
+    
+    return (0 if rate == 'NEW' else -1, -votes)
+
 class ActionRecommendByLocation(Action):
     def name(self) -> Text:
         return "action_recommend_by_location"
@@ -295,30 +277,111 @@ class ActionRecommendByLocation(Action):
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         location = tracker.get_slot("location")
         if not location:
-            dispatcher.utter_message(text="I'm sorry, I couldn't understand which location you're looking for. Could you please specify the location?")
+            last_message = tracker.latest_message.get('text').lower()
+            for prefix in ["top places in ", "best rated in ", "show me restaurants in ", "i'm looking for restaurants near ", "where can i eat in ", "recommend something in "]:
+                if last_message.startswith(prefix):
+                    location = last_message[len(prefix):].strip()
+                    break
+            else:
+                location = last_message
+
+        if not location:
+            dispatcher.utter_message(text="Which area in Bangalore are you interested in?")
             return []
 
         pipeline = [
             {"$match": {"location": {"$regex": location, "$options": "i"}}},
-            {"$sort": SON([("rating", -1)])},
-            {"$limit": 5}
+            {"$limit": 100}
         ]
 
-        top_restaurants = list(collection.aggregate(pipeline))
+        restaurants = list(collection.aggregate(pipeline))
 
-        if not top_restaurants:
+        if not restaurants:
             dispatcher.utter_message(text=f"I'm sorry, I couldn't find any restaurants in {location}.")
             return []
 
+        sorted_restaurants = sorted(restaurants, key=restaurant_sort_key)
+
+        unique_restaurants = OrderedDict()
+        for restaurant in sorted_restaurants:
+            name = restaurant['name']
+            if name not in unique_restaurants and len(unique_restaurants) < 5:
+                unique_restaurants[name] = restaurant
+
         response = f"Here are the top 5 restaurants in {location}:\n\n"
-        for restaurant in top_restaurants:
-            response += f"- {restaurant['name']} (Rating: {restaurant['rating']})\n"
-            response += f"  Cuisine: {restaurant['cuisines']}\n"
-            response += f"  Address: {restaurant['address']}\n"
-            response += f"  Cost for two: ₹{restaurant['approx_cost(for two people)']}\n\n"
+        for i, restaurant in enumerate(unique_restaurants.values(), 1):
+            rate = restaurant.get('rate', 'Not rated')
+            votes = restaurant.get('votes', 0)
+            
+            if rate == 'NEW':
+                rating_display = f"New restaurant (Votes: {votes})"
+            else:
+                rating_display = f"Rating: {rate} (Votes: {votes})"
+            
+            response += f"{i}. {restaurant['name'].upper()} ({rating_display})\n"
+            response += f"   Cuisine: {restaurant['cuisines']}\n"
+            response += f"   Address: {restaurant['address']}\n"
+            response += f"   Cost for two: ₹{restaurant['approx_cost(for two people)']}\n\n"
 
         dispatcher.utter_message(text=response)
-        return []
+        return [SlotSet("location", location)]
+
+class ActionRecommendByCuisine(Action):
+    def name(self) -> Text:
+        return "action_recommend_by_cuisine"
+
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        cuisine = tracker.get_slot("cuisine")
+        if not cuisine:
+            last_message = tracker.latest_message.get('text').lower()
+            for prefix in ["top places in ", "best rated in ", "i want to eat ", "show me ", "i'm in the mood for ", "tell me something good in "]:
+                if last_message.startswith(prefix):
+                    cuisine = last_message[len(prefix):].strip()
+                    break
+            else:
+                cuisine = last_message
+
+        if not cuisine:
+            dispatcher.utter_message(text="What cuisine would you like to try?")
+            return []
+
+        pipeline = [
+            {"$match": {"cuisines": {"$regex": cuisine, "$options": "i"}}},
+            {"$limit": 100}
+        ]
+
+        restaurants = list(collection.aggregate(pipeline))
+
+        if not restaurants:
+            dispatcher.utter_message(text=f"I'm sorry, I couldn't find any restaurants serving {cuisine} cuisine.")
+            return []
+
+        sorted_restaurants = sorted(restaurants, key=restaurant_sort_key)
+
+        unique_restaurants = OrderedDict()
+        for restaurant in sorted_restaurants:
+            name = restaurant['name']
+            if name not in unique_restaurants and len(unique_restaurants) < 5:
+                unique_restaurants[name] = restaurant
+
+        response = f"Here are the top 5 restaurants serving {cuisine} cuisine:\n\n"
+        for i, restaurant in enumerate(unique_restaurants.values(), 1):
+            rate = restaurant.get('rate', 'Not rated')
+            votes = restaurant.get('votes', 0)
+            
+            if rate == 'NEW':
+                rating_display = f"New restaurant (Votes: {votes})"
+            else:
+                rating_display = f"Rating: {rate} (Votes: {votes})"
+            
+            response += f"{i}. {restaurant['name'].upper()} ({rating_display})\n"
+            response += f"   Address: {restaurant['address']}\n"
+            response += f"   Cost for two: ₹{restaurant['approx_cost(for two people)']}\n\n"
+
+        dispatcher.utter_message(text=response)
+        return [SlotSet("cuisine", cuisine)]
     
 # Random Restaurant
 class ActionSurpriseRestaurant(Action):

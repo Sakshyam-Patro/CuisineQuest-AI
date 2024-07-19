@@ -82,10 +82,12 @@ slots:
     type: text
     mappings:
       - type: from_text
+        intent: recommend_by_cuisine
   location:
     type: text
     mappings:
       - type: from_text
+        intent: recommend_by_location
   # - action_recommend_by_cost
   # - action_recommend_by_cuisine_and_location
 

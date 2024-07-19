@@ -52,6 +52,8 @@ body {
 
 #chat-header h3 {
     margin: 0;
+    /* padding: 1px 1px; */
+    margin-left: 50px;
 }
 
 #close-chat {
@@ -99,7 +101,7 @@ body {
     border-radius: 20px;
     padding: 8px 12px;
     font-size: 14px;
-    margin-right: 8px;
+    margin-right: 0px;
     min-width: 0; 
 }
 
